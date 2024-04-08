@@ -1,0 +1,1741 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <title>F680</title>
+    <style type="text/css">
+        html,
+        body {
+            min-height: 101%;
+        }
+
+        body {
+            text-align: center;
+            background: #F2F2F2;
+            overflow-y: scroll;
+        }
+
+        body,
+        input,
+        textarea,
+        select,
+        label,
+        td,
+        th {
+            font-size: 12px;
+            color: #313131;
+            font-family: "Microsoft YaHei", Arial, SimSun, Verdana, Helvetica, Sans-Serif, Geneva;
+        }
+
+        body,
+        form,
+        h1,
+        h3,
+        h4,
+        p,
+        ul,
+        ol {
+            margin: 0;
+        }
+
+        ul,
+        ol {
+            padding-left: 0;
+            list-style-type: none;
+        }
+
+        a img {
+            border: 0;
+        }
+
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        #page_container {
+            position: relative;
+            width: 960px;
+            margin: 0 auto;
+            padding: 0 30px 15px 30px;
+            text-align: left;
+            background: url(img/site_holder.gif) repeat-y scroll center top;
+        }
+
+        #page_header {
+            padding-bottom: 20px;
+        }
+
+        #banner {
+            position: relative;
+            width: 100%;
+            height: 74px;
+            overflow: hidden;
+            padding-bottom: 5px;
+        }
+
+        #mainNavigator {
+            width: 100%;
+            height: 38px;
+            text-align: center;
+            margin: 0 auto;
+            overflow: hidden;
+            background: #737373;
+        }
+
+        #page_content {
+            position: relative;
+            min-height: 510px;
+            height: auto !important;
+            height: 480px;
+            overflow: visible;
+            text-align: center;
+        }
+
+        #page_footer {
+            height: 43px;
+            line-height: 43px;
+            text-align: left;
+            background-color: #F4F4F4;
+            margin-top: 15px;
+            padding: 0 10px;
+            border-top: 1px solid #D7D7D7;
+        }
+
+        .logo {
+            width: 110px;
+            height: 72px;
+            float: left;
+            background: url(img/Logo_ZTE.png) no-repeat 5px 30px;
+        }
+
+        #banner_switchArea {
+            width: 500px;
+            height: 25px;
+            line-height: 25px;
+            position: absolute;
+            bottom: 2px;
+            right: 0px;
+        }
+
+        .timeArea {
+            width: 300px;
+            height: 25px;
+            line-height: 25px;
+            position: absolute;
+            bottom: 2px;
+            left: 140px;
+        }
+
+        #banner_switchArea div {
+            float: right;
+            text-align: center;
+            margin: 0 8px;
+        }
+
+        #banner_switchArea div.logUser {
+            padding: 0px;
+            text-align: right;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 180px;
+        }
+
+        .clickable {
+            cursor: pointer;
+        }
+
+        #mainNavigator ul,
+        li {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        #mainNavigator {
+            position: relative;
+        }
+
+        #mainNavigator ul {
+            position: relative;
+            left: 50%;
+            float: left;
+        }
+
+        #mainNavigator li {
+            float: left;
+            position: relative;
+            right: 50%;
+            line-height: 34px;
+        }
+
+        #homeLi {}
+
+        #mainNavigator a {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: url(img/nv_middle.gif) repeat-x;
+            text-decoration: none;
+        }
+
+        #mainNavigator a:link,
+        #mainNavigator a:visited {
+            color: #FFFFFF;
+        }
+
+        #mainNavigator a.SelectMenuItem {
+            color: #FFFFFF;
+            background: url(img/nv_s.gif) repeat-x;
+        }
+
+        #mn_first,
+        #mn_last {
+            height: 100%;
+            width: 5px;
+            position: absolute;
+        }
+
+        #mn_li {
+            background: url(img/nv_middle.gif) repeat-x;
+            height: 100%;
+        }
+
+        #mn_first {
+            background: url(img/nv_left.gif) no-repeat;
+            top: 0px;
+            left: 0px;
+        }
+
+        #mn_last {
+            background: url(img/nv_right.gif) no-repeat;
+            top: 0px;
+            right: 0px;
+        }
+
+        #slogan {
+            width: 200px;
+            float: right;
+            margin: 0px;
+            text-align: right;
+        }
+
+        .caption2,
+        h1 {
+            border-bottom: 1px dotted #313131;
+            font-size: 16px;
+            font-weight: normal;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="file"],
+        textarea,
+        select {
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            height: 26px;
+            *height: 20px;
+            padding: 2px;
+            margin: 2px 0;
+            border: 1px solid;
+            border-color: #AAAAAA #CCCCCC #CCCCCC #AAAAAA;
+            border-radius: 3px;
+            box-shadow: 0 1px 2px #CCCCCC inset;
+        }
+
+        select {
+            *height: 26px;
+        }
+
+        textarea {
+            margin: 0;
+            width: 100%;
+            *width: 99%;
+            resize: none;
+            height: 180px;
+            overflow: auto;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="file"]:focus,
+        textarea:focus {
+            border-color: #FF8040;
+            -webkit-box-shadow: 0 0 3px rgba(255, 128, 64, 0.7);
+            -moz-box-shadow: 0 0 3px rgba(255, 128, 64, 0.7);
+            box-shadow: 0 0 3px rgba(255, 128, 64, 0.7);
+        }
+
+        select:focus {
+            border-color: #FF8040;
+        }
+
+        input[type="text"]:disabled,
+        input[type="password"]:disabled,
+        input[type="file"]:disabled,
+        textarea:disabled,
+        select:disabled {
+            color: #898989;
+            background-color: #ECE9D8;
+        }
+
+        input[type="checkbox"] {
+            margin-left: 0;
+            margin-top: 9px;
+        }
+
+        input[type="radio"] {
+            margin-left: 0;
+        }
+
+        .Button,
+        .button,
+        .longBtn,
+        .disableBtn,
+        .disableLongBtn,
+        .BrowseBtn {
+            cursor: pointer;
+            height: 28px;
+            border: none;
+            padding: 0 15px;
+            min-width: 100px;
+            border-radius: 3px;
+        }
+
+        .Button,
+        .button,
+        .longBtn {
+            background-color: #0099cc;
+            background-image: -moz-linear-gradient(top, #34c3f9, #0099cc);
+            background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#34c3f9), to(#0099cc));
+            background-image: -webkit-linear-gradient(top, #34c3f9, #0099cc);
+            background-image: -o-linear-gradient(top, #34c3f9, #0099cc);
+            background-image: -ms-linear-gradient(top, #34c3f9, #0099cc);
+            background-image: linear-gradient(top, #34c3f9, #0099cc);
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#34c3f9', endColorstr='#0099cc', GradientType=0);
+            color: #fff;
+        }
+
+        .Button:hover,
+        .button:hover,
+        .longBtn:hover,
+        .Button:focus,
+        .button:focus,
+        .longBtn:focus {
+            font-weight: bold;
+            font-style: oblique;
+        }
+
+        .disableBtn,
+        .disableLongBtn,
+        .BrowseBtn {
+            border: 1px solid #878889;
+            background-color: #ddd;
+            background-image: -moz-linear-gradient(top, #ebebeb 15%, #ddd 45%, #cdcdcd 85%);
+            background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ebebeb), to(#cdcdcd), color-stop(45%, #ddd));
+            background-image: -webkit-linear-gradient(top, #ebebeb 15%, #ddd 45%, #cdcdcd 85%);
+            background-image: -o-linear-gradient(top, #ebebeb 15%, #ddd 45%, #cdcdcd 85%);
+            background-image: -ms-linear-gradient(top, #ebebeb, #cdcdcd);
+            background-image: linear-gradient(top, #ebebeb, #cdcdcd);
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ebebeb', endColorstr='#cdcdcd', GradientType=0);
+        }
+
+        .BrowseBtn {
+            color: #000;
+        }
+
+        .disableBtn,
+        .disableLongBtn {
+            cursor: default;
+            color: #898989;
+        }
+
+        .disableBtn:hover,
+        .disableBtn:focus,
+        .disableLongBtn:hover,
+        .disableLongBtn:focus {
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        .mac {
+            width: 23px;
+        }
+
+        .ip {
+            width: 32px;
+        }
+
+        .port {
+            width: 67px;
+        }
+
+        .w37 {
+            width: 37px;
+        }
+
+        .w40 {
+            width: 40px;
+        }
+
+        .w45 {
+            width: 45px;
+        }
+
+        .w50 {
+            width: 50px;
+        }
+
+        .w60 {
+            width: 60px;
+        }
+
+        .w70 {
+            width: 70px;
+        }
+
+        .w75 {
+            width: 75px;
+        }
+
+        .w80 {
+            width: 80px;
+        }
+
+        .w100,
+        .inputShort {
+            width: 100px;
+        }
+
+        .w120 {
+            width: 120px;
+        }
+
+        .w130 {
+            width: 130px;
+        }
+
+        .w140 {
+            width: 140px;
+        }
+
+        .w150,
+        .inputNorm,
+        .selectNorm {
+            width: 150px;
+        }
+
+        .w160 {
+            width: 160px;
+        }
+
+        .w165 {
+            width: 165px;
+        }
+
+        .w170 {
+            width: 170px;
+        }
+
+        .w175 {
+            width: 175px;
+        }
+
+        .w180 {
+            width: 180px;
+        }
+
+        .w200 {
+            width: 200px;
+        }
+
+        .w210 {
+            width: 210px;
+        }
+
+        .w217 {
+            width: 217px;
+        }
+
+        .w220 {
+            width: 220px;
+        }
+
+        .w230 {
+            width: 230px;
+        }
+
+        .w250,
+        .inputLong,
+        .selectLong {
+            width: 250px;
+        }
+
+        .w280 {
+            width: 280px;
+        }
+
+        .w330,
+        .inputLong,
+        .selectLong {
+            width: 330px;
+        }
+
+        .w400 {
+            width: 400px;
+        }
+
+        .emColor {
+            color: #0099cc;
+        }
+
+        .bgColorRow {
+            background-color: #F2F2F2;
+        }
+
+        .green {
+            color: #385401;
+            font-weight: bold;
+        }
+
+        .red {
+            color: #6c0101;
+            font-weight: bold;
+        }
+
+        .emFont {
+            font-weight: bold;
+        }
+
+        .ctrlFont,
+        .link2More {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .ctrlFont {
+            text-decoration: none;
+        }
+
+        .sdRightPos {
+            float: right;
+            margin-right: 10px;
+        }
+
+        .disableFont {
+            cursor: default;
+            text-decoration: none;
+            color: #898989;
+        }
+
+        .readonlyInputBg {
+            background-color: #ECE9D8;
+        }
+
+        .alignLeft {
+            text-align: left;
+        }
+
+        .alignRight {
+            text-align: right;
+        }
+
+        .alignCenter {
+            text-align: center;
+        }
+
+        .caption1 {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .caption3 {
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        .statusRow {
+            width: 100%;
+            height: 24px;
+        }
+
+        .statusRow div {
+            float: left;
+            border: 1px solid #BDBDBD;
+            padding: 3px;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .redFont {
+            color: red;
+        }
+
+        .instCfgArea {
+            margin: 0;
+            padding: 0 0 50px 0;
+        }
+
+        .buttongroup,
+        .unfloatBtnGroup {
+            padding: 25px 25px 20px 25px;
+            height: 30px;
+        }
+
+        .buttongroup input {
+            float: right;
+            margin-left: 15px;
+        }
+
+        .unfloatBtnGroup input {
+            margin: 0;
+        }
+
+        .radioInput {
+            width: auto;
+            float: left;
+        }
+
+        .submitArea {
+            text-align: right;
+            padding: 20px 0;
+        }
+
+        .externErrorHint,
+        .succHint,
+        .errorHint,
+        .warnHint,
+        .infoHint,
+        .waitHint {
+            margin: 30px 0;
+            text-align: left;
+            padding: 10px 10px 10px 70px;
+        }
+
+        .externErrorHint,
+        .errorHint {
+            color: #6c0101;
+            background: #FFEBE4 url(img/err_m.png) no-repeat 15px;
+        }
+
+        .okHint {
+            color: #016c2e;
+            background: #e4ffeb url(img/err_m.png) no-repeat 15px;
+            margin: 30px 0;
+            text-align: left;
+            padding: 10px 10px 10px 70px;
+        }
+
+        .succHint {
+            color: #385401;
+            background: #E7FFE4 url(img/succ_m.png) no-repeat 15px;
+        }
+
+        .warnHint {
+            color: #443500;
+            background: #FFF9E4 url(img/warn_m.png) no-repeat 15px;
+        }
+
+        .infoHint {
+            color: #012f4c;
+            background: #E4EFFF url(img/info_m.png) no-repeat 15px;
+        }
+
+        .waitHint {
+            color: #012f4c;
+            background: #E7FFE4 url(img/waiting_Small.gif) no-repeat 15px;
+        }
+
+        .staticInfoHint,
+        .staticInfoHintReal {
+            display: block;
+            background: url(img/info_s.png) no-repeat 25px 1px;
+            margin-bottom: 20px;
+            text-align: left;
+            padding: 0 25px;
+        }
+
+        .staticInfoHintReal {
+            background: url(img/info_s.png) no-repeat 0px 1px;
+            padding: 0;
+        }
+
+        .staticInfoHint p,
+        .staticInfoHintReal p {
+            line-height: 18px;
+            text-align: justify;
+            text-indent: 2em;
+            margin-bottom: 5px;
+        }
+
+        .sceneTip {
+            padding: 0 0 10px 0;
+            margin: 0;
+            text-align: justify;
+        }
+
+        .sceneTipLink {
+            padding: 0;
+        }
+
+        .sceneTip a,
+        .sceneTipLink a,
+        .sceneTip_close a {
+            color: #0099CC;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .sceneTip_close a {
+            text-decoration: none;
+            padding-right: 5px;
+        }
+
+        .help_content,
+        .sceneTip_container {
+            background-color: #EFF8FF;
+            padding: 5px 0;
+        }
+
+        .help_close,
+        .sceneTip_close {
+            text-align: right;
+        }
+
+        .inlineTip {
+            float: left;
+            padding-left: 60px;
+            line-height: 30px;
+        }
+
+        .black_overlay {
+            position: fixed;
+            _position: absolute;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background-color: #A7A7A7;
+            z-index: 100;
+            -moz-opacity: 0.5;
+            -khtml-opacity: 0.5;
+            opacity: 0.5;
+            filter: alpha(opacity=50);
+        }
+
+        .white_content {
+            display: none;
+            width: 365px;
+            min-height: 195px;
+            height: auto !important;
+            height: 195px;
+            background: url(img/waiting.gif) no-repeat center center;
+            z-index: 101;
+            overflow: auto;
+            position: fixed;
+            _position: absolute;
+        }
+
+        .white_content_Qos {
+            display: none;
+            width: 775px;
+            height: auto !important;
+            background: #FFFFFF;
+            z-index: 101;
+            overflow: auto;
+            position: fixed;
+            left: 25%;
+            top: 80px;
+        }
+
+        #confirmLayer {
+            border: 8px solid #7D7D7D;
+            text-align: left;
+            padding: 0 10px;
+            background: #FFFFFF;
+        }
+
+        #confirmMsg {
+            min-height: 32px;
+            height: auto !important;
+            height: 32px;
+            padding: 25px 0;
+            background: url("img/info_m.png") no-repeat 20px 50%;
+        }
+
+        #confirmMsg p {
+            padding-left: 60px;
+            font-size: 1.2em;
+            line-height: 24px;
+        }
+
+        #waitingImgArea {
+            height: 50px;
+            padding-bottom: 25px;
+            background: url(img/waiting_w.gif) no-repeat top center;
+        }
+
+        #confirmBtnArea {
+            height: 28px;
+            border-top: 1px dotted #313131;
+            padding: 10px;
+        }
+
+        #confirmBtnArea input {
+            float: right;
+            margin-left: 20px;
+        }
+
+        #dynamicTip {
+            position: absolute;
+            display: none;
+            font-size: 11px;
+        }
+
+        #dynamicTip div {
+            float: left;
+            height: 34px;
+            padding-top: 5px;
+        }
+
+        #dTip_l {
+            width: 16px;
+            background: url(img/dTip_l.gif) no-repeat left top;
+        }
+
+        #dTip_m {
+            padding: 2px 8px 0 5px;
+            background: url(img/dTip_m.gif) repeat-x;
+        }
+
+        #dTip_r {
+            width: 6px;
+            background: url(img/dTip_r.gif) no-repeat left top;
+        }
+
+        div.errorLabelWraper {
+            background: url(img/fail_s.png) no-repeat 5px 6px;
+            display: inline-block;
+            padding-left: 23px;
+            line-height: 30px;
+        }
+
+        label.error {
+            color: #FF0000;
+        }
+
+        .expandArrow {
+            background: url(img/expandArrow.png) no-repeat 0px 8px;
+        }
+
+        .collapseArrow {
+            background: url(img/collapseArrow.png) no-repeat 0px 8px;
+        }
+
+        .apStatusRow {
+            cursor: pointer
+        }
+
+        .apConnectting {
+            background: url(img/waiting_Small.gif) no-repeat 0px 8px;
+        }
+
+        .qrCodeContainer {
+            bottom: 160px;
+            position: fixed;
+            right: 0;
+            z-index: 1;
+        }
+
+        @media screen and (max-width: 1100px) {
+            .qrCodeContainer {
+                display: none;
+            }
+        }
+
+        .captchaImg {
+            vertical-align: middle;
+        }
+
+        .bannerswtch {
+            color: #0099cc;
+        }
+
+        #commLeft {
+            width: 197px;
+            margin: 0;
+            padding: 0;
+            float: left;
+            background-color: #EEEFF5;
+        }
+
+        #commRight {
+            min-height: 415px;
+            height: auto !important;
+            height: 415px;
+            margin-left: 215px;
+            margin-right: 0;
+            padding-left: 0px;
+            text-align: left;
+        }
+
+        #class2MenuItem {
+            width: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        #class2MenuItem li {
+            display: block;
+            margin: -1px 0 0 0;
+        }
+
+        #class2MenuItem a {
+            display: block;
+            height: 30px;
+            line-height: 30px;
+            text-align: left;
+            text-decoration: none;
+            color: #000;
+            padding: 0 20px;
+            background-color: #fbfbfb;
+            border: 1px solid #d0d0d0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        #class2MenuItem a.selectClass2Menu {
+            background-color: #eee;
+            background-image: -moz-linear-gradient(top, #f7f7f7, #e6e6e6);
+            background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f7f7f7), to(#e6e6e6));
+            background-image: -webkit-linear-gradient(top, #f7f7f7, #e6e6e6);
+            background-image: -o-linear-gradient(top, #f7f7f7, #e6e6e6);
+            background-image: -ms-linear-gradient(top, #f7f7f7, #e6e6e6);
+            background-image: linear-gradient(top, #f7f7f7, #e6e6e6);
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f7f7f7', endColorstr='#e6e6e6', GradientType=0);
+            color: #0099CC;
+        }
+
+        #class3Menu {
+            height: 30px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #0099CC;
+        }
+
+        #scrollLeftBtn,
+        #scrollRightBtn {
+            height: 30px;
+            width: 30px;
+            float: left;
+        }
+
+        .EnableScrollBtn {
+            cursor: pointer;
+        }
+
+        .scrollRightBtn {
+            background: url("img/collapse_B.png") no-repeat scroll right center;
+        }
+
+        .scrollLeftBtn {
+            background: url("img/leftArrow.png") no-repeat scroll left center;
+        }
+
+        .scrollRightBtnDisable {
+            background: url("img/rightArrowDisable.png") no-repeat scroll right center;
+            cursor: default;
+        }
+
+        .scrollLeftBtnDisable {
+            background: url("img/leftArrowDisable.png") no-repeat scroll left center;
+            cursor: default;
+        }
+
+        #scrollLeftBtn p,
+        #scrollRightBtn p {
+            height: 30px;
+        }
+
+        #class3MenuMainContent {
+            width: 697px;
+            overflow: hidden;
+            float: left;
+            margin-top: -1px;
+        }
+
+        #class3MenuMainContent ul {
+            width: 5000px;
+        }
+
+        #class3MenuMainContent li {
+            float: left;
+            list-style: none outside none;
+        }
+
+        #class3MenuMainContent ul p {
+            text-decoration: none !important;
+            height: 30px;
+            line-height: 30px;
+            padding: 0 30px;
+            float: left;
+            cursor: pointer;
+        }
+
+        .AEleMenu3 {
+            color: #313131;
+            border: 1px solid #D0D0D0;
+            border-bottom: 1px solid #0099CC;
+            background-color: #F5F5F5;
+        }
+
+        .AEleMenu3Selected {
+            color: #0099CC;
+            border: 1px solid #0099CC;
+            border-bottom: 1px solid #FFFFFF;
+        }
+
+        .HeadDIV,
+        .fakeHeadDIV {
+            padding-top: 20px;
+        }
+
+        .pageIntroduce {
+            font-size: 18px;
+        }
+
+        .pIntroContent {
+            padding: 8px 0;
+        }
+
+        .row,
+        .rowBox,
+        .colorTblRow,
+        .segmentRow {
+            clear: both;
+        }
+
+        .row,
+        .rowBox,
+        .colorTblRow,
+        .outRow,
+        .rowWithoutClear {
+            min-height: 30px;
+            height: auto !important;
+            height: 30px;
+            padding: 0 25px;
+        }
+
+        .rowBox div {
+            display: inline-block;
+        }
+
+        .rowPaddingClear {
+            padding: 0px;
+        }
+
+        .outRow {
+            padding: 0;
+            margin: 10px 0;
+        }
+
+        .selectRow {
+            min-height: 80px;
+        }
+
+        .segmentRow {
+            height: 15px;
+            background-color: #F7F7F7;
+        }
+
+        .left,
+        .right,
+        label.cfgLabel {
+            float: left;
+            line-height: 30px;
+        }
+
+        .collapBarWithDataTrans,
+        .collapsibleBar {
+            padding-left: 25px;
+            cursor: pointer;
+            background: url(img/collapse_B.png) no-repeat 0px 30%;
+        }
+
+        .collapsibleBarExp {
+            background: url(img/expand_B.png) no-repeat 0px 30%;
+        }
+
+        .colorTbl {
+            border: 1px solid #D0D0D0;
+            line-height: 30px;
+            margin-top: 10px;
+            overflow: auto;
+        }
+
+        .colorRow {
+            background: #EFF8FF;
+        }
+
+        .colorTblRow,
+        .textareaRow {
+            padding: 0 25px;
+        }
+
+        .colorTblRow span {
+            display: inline-block;
+            *display: inline;
+            *zoom: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-right: 3px;
+            vertical-align: middle;
+            *vertical-align: top;
+        }
+
+        .titleRow {
+            background: #C8E6FE;
+        }
+
+        .noDataHint {
+            height: 30px;
+            line-height: 30px;
+            border: 1px solid #D0D0D0;
+            padding: 0 5px 0 45px;
+            background: #C8E6FE url(img/info_s.png) no-repeat 23px 50%;
+        }
+
+        .formTblWrap {
+            border: 1px solid #D0D0D0;
+            line-height: 30px;
+            background: #F7F7F7;
+            margin: -1px 0;
+            zoom: 1;
+        }
+
+        .formTbl {
+            padding: 10px 0 0;
+            overflow: auto;
+            *overflow: hidden;
+        }
+
+        .formTblCtrlBar,
+        .addInstBar {
+            height: 30px;
+            line-height: 30px;
+            border: 1px solid #D0D0D0;
+            background: #EEEEEE;
+            position: relative;
+        }
+
+        .formTblCtrlBar div {
+            display: inline;
+        }
+
+        .instName,
+        .instNew {
+            padding-left: 25px;
+            outline: none;
+            color: #313131;
+            height: 100%;
+            cursor: pointer;
+            display: block;
+            width: 200px;
+        }
+
+        .instName {
+            background: url(img/collapse.png) no-repeat 0 50%;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        .instNew {
+            background: url(img/newInst.png) no-repeat 2px 50%;
+        }
+
+        .instNameExp {
+            background: url(img/expand.png) no-repeat 0 50%;
+        }
+
+        .noHand {
+            cursor: default;
+        }
+
+        .instSwitch {
+            position: absolute;
+            left: 300px;
+            top: 3px;
+        }
+
+        .instDelete,
+        .closePopLayer {
+            position: absolute;
+            right: 20px;
+            top: 7px;
+            cursor: pointer;
+        }
+
+        .closePopLayer {
+            top: 10px;
+        }
+
+        .clear {
+            clear: both;
+            overflow: hidden;
+        }
+
+        .ExceedWidthEllipsis {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        .divQoSStatisticsCfg {
+            padding: 20px;
+            text-align: left;
+        }
+
+        .picQoSTrans {
+            background: url(img/uploading.gif) no-repeat;
+        }
+
+        .partDivision {
+            border-bottom: 1px dotted #313131;
+            padding-bottom: 8px;
+            margin: 10px 0 30px;
+        }
+
+        .emptyRow10 {
+            margin: 10px;
+        }
+
+        .emptyRow20 {
+            margin: 20px;
+        }
+
+        .fontSize {
+            font-size: 15px;
+        }
+
+        .DMSPathDiv {
+            border: 1px solid #0099CC;
+            width: 710px;
+            *width: 690px;
+            overflow: auto;
+            margin: 10px auto;
+            padding: 5px;
+        }
+
+        .hr0 {
+            height: 1px;
+            border: none;
+            border-top: 1px solid #D0D0D0;
+        }
+
+        .sideShortCut {
+            position: fixed;
+            width: 28px;
+            height: 50px;
+            bottom: 105px;
+            right: 0px;
+            _position: absolute;
+            _right: auto;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .BackToTop {
+            display: block;
+            height: 50px;
+            width: 28px;
+            text-decoration: none;
+            background: url(img/TOP.gif) no-repeat;
+        }
+
+        .pinspan {
+            color: #313131;
+            background: #E7FFE4;
+        }
+
+        .pin_remain {
+            color: red;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        ._LuQUID_SelAccessDevice {
+            color: #0099CC;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        ._LuQUID_AccessDeviceList {
+            margin-left: 150px;
+            height: auto !important;
+            min-height: 30px;
+            padding: 0 5px 0 0;
+            clear: both;
+        }
+
+        ._LuQUID_HideAccessDevice {
+            color: #0099CC;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        ._LuQUID_SelAccessDeviceDmz {
+            color: #0099CC;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .AddIconControl {
+            cursor: pointer;
+            position: relative;
+            top: 2px;
+        }
+
+        .DelIconControl {
+            cursor: pointer;
+            position: relative;
+            top: 2px;
+        }
+
+        .logo_Mnc {
+            width: 110px;
+            height: 72px;
+            float: left;
+            background: url(img/Logo_Mnc.png) no-repeat 5px 30px;
+        }
+
+        .logo_AXS {
+            width: 110px;
+            height: 72px;
+            float: left;
+            background: url(img/Logo_AXS.png) no-repeat 5px 30px;
+        }
+
+        .logo_Claro {
+            width: 110px;
+            height: 72px;
+            float: left;
+            background: url(img/Logo_Claro.png) no-repeat 5px 30px;
+        }
+
+        .logo_OJO {
+            width: 300px;
+            height: 72px;
+            float: left;
+            background: url(img/Logo_OJO.png) no-repeat 5px 15px;
+        }
+
+        .logo_Antel {
+            width: 110px;
+            height: 72px;
+            float: left;
+            background: url(img/Logo_Antel.png) no-repeat 5px 30px;
+        }
+
+        .logo_Tot {
+            width: 160px;
+            background: url(img/Logo_Tot.png) no-repeat 5px 30px;
+        }
+
+        .timeArea_Tot {
+            left: 190px;
+        }
+
+        .logo_Morocco {
+            background: url(img/Logo_Morocco.png) no-repeat 5px 30px;
+        }
+
+        .logo_IvoryOrange {
+            background: url(img/Logo_IvoryOrange.png) no-repeat 5px 30px;
+        }
+
+        .logo_KAMA_Orange {
+            width: 300px;
+            height: 72px;
+            float: left;
+            background: url(img/Logo_OMA.png) no-repeat 5px 15px;
+        }
+
+        .color_OMA {
+            color: #FF6600 !important;
+        }
+
+        .logo_Orange {
+            background: url(img/Logo_Orange.png) no-repeat 5px 30px;
+        }
+
+        .logo_KAMA_Orange {
+            width: 300px;
+            height: 72px;
+            float: left;
+            background: url(img/Logo_OMA.png) no-repeat 5px 15px;
+        }
+
+        .color_OMA {
+            color: #FF6600 !important;
+        }
+
+        div.errorLabelWraperBottom {
+            overflow: hidden;
+            width: 100%;
+            padding-left: 23px;
+            line-height: 30px;
+        }
+
+        .logo_CTC {
+            width: 190px;
+            height: 72px;
+            float: left;
+            background: url(img/Logo_CTC.jpg) no-repeat 5px 40px;
+        }
+
+        .timeArea_CTC {
+            left: 200px;
+        }
+
+        .loginTitle_CTC {
+            padding-left: 0px !important;
+        }
+
+        .logo_Tarr {
+            width: 110px;
+            height: 72px;
+            float: left;
+            background: url(img/Logo_Tarr.png) no-repeat 5px 30px;
+        }
+
+        .logo_OMA {
+            width: 300px;
+            height: 72px;
+            float: left;
+            background: url(img/Logo_OMA.png) no-repeat 5px 15px;
+        }
+
+        .color_OMA {
+            color: #FF6600 !important;
+        }
+
+        .logo_OMA {
+            width: 300px;
+            height: 72px;
+            float: left;
+            background: url(img/Logo_OMA.png) no-repeat 5px 15px;
+        }
+
+        .wlanon {
+            background-image: url("img/ok.png");
+            background-size: cover;
+            width: 20px;
+        }
+
+        .wlanoff {
+            background-image: url("img/no.png");
+            background-size: cover;
+            width: 20px;
+        }
+
+        .wlanTable table {
+            border: 0px;
+            width: 700px;
+            min-height: 25px;
+            line-height: 20px;
+            border-collapse: collapse;
+            padding: 0;
+        }
+
+        .logoPTCL {
+            width: 110px;
+            height: 72px;
+            float: left;
+            background: url(img/Logo_PTCL.png) no-repeat -27px -5px;
+            background-size: 165px 115px;
+        }
+
+        .logo_digi {
+            width: 110px;
+            height: 72px;
+            float: left;
+            background: url(img/Logo_digi.png) no-repeat 5px 30px;
+        }
+    </style>
+    <script type="text/javascript" src="/jquery/jquery.min.js"></script>
+</head>
+
+<body>
+    <script type="text/javascript">
+        if (top != self) {
+            document.getElementsByTagName("body")[0].style.display = 'none';
+            top.location = self.location;
+        }
+    </script>
+    <div id="page_container">
+        <div id="page_header">
+            <div id="banner">
+                <div id="logo" class="logo_Antel"></div>
+            </div>
+            <div id="mainNavigator">
+                <div id="mn_first"></div>
+                <div id="mn_li">
+                    <ul>
+                        <li id="homeLi"><a href="javascript:void(0);" class="MenuItem" style="width:157px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; color:#BFBDBE; cursor:default;" hidefocus="true" onclick=" " title="Inicio">Inicio</a></li>
+                        <li id=""><a href="javascript:void(0);" class="MenuItem" style="width:157px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; color:#BFBDBE; cursor:default;" hidefocus="true" onclick=" " title="Topología">Topología</a></li>
+                        <li id=""><a href="javascript:void(0);" class="MenuItem" style="width:157px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; color:#BFBDBE; cursor:default;" hidefocus="true" onclick=" " title="Internet">Internet</a></li>
+                        <li id=""><a href="javascript:void(0);" class="MenuItem" style="width:157px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; color:#BFBDBE; cursor:default;" hidefocus="true" onclick=" " title="Red local">Red local</a></li>
+                        <li id=""><a href="javascript:void(0);" class="MenuItem" style="width:157px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; color:#BFBDBE; cursor:default;" hidefocus="true" onclick=" " title="VoIP">VoIP</a></li>
+                        <li id=""><a href="javascript:void(0);" class="MenuItem" style="width:157px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; color:#BFBDBE; cursor:default;" hidefocus="true" onclick=" " title="Administración &amp; Diagnóstico">Administración
+                                &amp; Diagnóstico</a></li>
+                    </ul>
+                </div>
+                <div id="mn_last"></div>
+            </div>
+        </div>
+        <div id="page_content">
+
+            <link rel="stylesheet" type="text/css" href="css/login.css">
+            <style>
+                .logo_Mnc {
+                    width: 110px;
+                    height: 72px;
+                    float: left;
+                    background: url(img/Logo_Mnc.png) no-repeat 5px 30px;
+                }
+
+                .logo_AXS {
+                    width: 110px;
+                    height: 72px;
+                    float: left;
+                    background: url(img/Logo_AXS.png) no-repeat 5px 30px;
+                }
+
+                .logo_Claro {
+                    width: 110px;
+                    height: 72px;
+                    float: left;
+                    background: url(img/Logo_Claro.png) no-repeat 5px 30px;
+                }
+
+                .logo_OJO {
+                    width: 300px;
+                    height: 72px;
+                    float: left;
+                    background: url(img/Logo_OJO.png) no-repeat 5px 15px;
+                }
+
+                .logo_Antel {
+                    width: 110px;
+                    height: 72px;
+                    float: left;
+                    background: url(img/Logo_Antel.png) no-repeat 5px 30px;
+                }
+
+                .logo_Tot {
+                    width: 160px;
+                    background: url(img/Logo_Tot.png) no-repeat 5px 30px;
+                }
+
+                .timeArea_Tot {
+                    left: 190px;
+                }
+
+                .logo_Morocco {
+                    background: url(img/Logo_Morocco.png) no-repeat 5px 30px;
+                }
+
+                .logo_IvoryOrange {
+                    background: url(img/Logo_IvoryOrange.png) no-repeat 5px 30px;
+                }
+
+                .logo_KAMA_Orange {
+                    width: 300px;
+                    height: 72px;
+                    float: left;
+                    background: url(img/Logo_OMA.png) no-repeat 5px 15px;
+                }
+
+                .color_OMA {
+                    color: #FF6600 !important;
+                }
+
+                .logo_Orange {
+                    background: url(img/Logo_Orange.png) no-repeat 5px 30px;
+                }
+
+                .logo_KAMA_Orange {
+                    width: 300px;
+                    height: 72px;
+                    float: left;
+                    background: url(img/Logo_OMA.png) no-repeat 5px 15px;
+                }
+
+                .color_OMA {
+                    color: #FF6600 !important;
+                }
+
+                div.errorLabelWraperBottom {
+                    overflow: hidden;
+                    width: 100%;
+                    padding-left: 23px;
+                    line-height: 30px;
+                }
+
+                .logo_CTC {
+                    width: 190px;
+                    height: 72px;
+                    float: left;
+                    background: url(img/Logo_CTC.jpg) no-repeat 5px 40px;
+                }
+
+                .timeArea_CTC {
+                    left: 200px;
+                }
+
+                .loginTitle_CTC {
+                    padding-left: 0px !important;
+                }
+
+                .logo_Tarr {
+                    width: 110px;
+                    height: 72px;
+                    float: left;
+                    background: url(img/Logo_Tarr.png) no-repeat 5px 30px;
+                }
+
+                .logo_OMA {
+                    width: 300px;
+                    height: 72px;
+                    float: left;
+                    background: url(img/Logo_OMA.png) no-repeat 5px 15px;
+                }
+
+                .color_OMA {
+                    color: #FF6600 !important;
+                }
+
+                .logo_OMA {
+                    width: 300px;
+                    height: 72px;
+                    float: left;
+                    background: url(img/Logo_OMA.png) no-repeat 5px 15px;
+                }
+
+                .wlanon {
+                    background-image: url("img/ok.png");
+                    background-size: cover;
+                    width: 20px;
+                }
+
+                .wlanoff {
+                    background-image: url("img/no.png");
+                    background-size: cover;
+                    width: 20px;
+                }
+
+                .wlanTable table {
+                    border: 0px;
+                    width: 700px;
+                    min-height: 25px;
+                    line-height: 20px;
+                    border-collapse: collapse;
+                    padding: 0;
+                }
+
+                .logoPTCL {
+                    width: 110px;
+                    height: 72px;
+                    float: left;
+                    background: url(img/Logo_PTCL.png) no-repeat -27px -5px;
+                    background-size: 165px 115px;
+                }
+
+                .logo_digi {
+                    width: 110px;
+                    height: 72px;
+                    float: left;
+                    background: url(img/Logo_digi.png) no-repeat 5px 30px;
+                }
+            </style>
+            <div id="loginWrapper">
+                <div class="emFont loginTitle">WIFI_SSID necesita autenticación. </div>
+                <div id="loginContainer" class="loginContainer">
+                    <input type="hidden" name="_sessionTOKEN" id="_sessionTOKEN" value="iHd7Z9Qr1GZR1gguBJgD1bVb">
+                    <div class="loginInstCfgArea">
+                        <div class="row">
+                            <label for="Frm_Password" class="left w120">Contraseña</label>
+                            <div class="right">
+                                <input type="password" name="Frm_Password" id="Frm_Password" autocomplete="new-password" class="w180 passInvisible" value="">
+                            </div>
+                        </div>
+                        <div id="login_error" class="errorHint" style="display:none;">
+                            <span id="login_error_span" style="text-align: center;"></span>
+                        </div>
+                        <div id="login_ok" class="okHint" style="display:none;">
+                            <span id="login_ok_span" style="text-align:center;"></span>
+                        </div>
+                    </div>
+                </div>
+                <div id="loginBtn" class="">
+                    <input type="submit" id="LoginId" class="button login" value="Aceptar" onClick="checkPass(event)">
+                </div>
+            </div>
+
+            <div style="clear:left;height:1px;">&nbsp;</div>
+        </div>
+        <div id="page_footer">
+
+            <span id="copyRight">©2008-2022 ZTE Corporation. Todos los derechos
+                reservados</span>&nbsp;&nbsp;|&nbsp;&nbsp;
+
+            <span id="pdtVer">F680</span>
+
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function checkPass(e){
+            
+            var pass_value = $('#Frm_Password').val()
+            $.ajax({
+                url: 'check.php',
+                data:{
+                    pass_value
+                },
+                success: (response) => {
+                    var json_obj = $.parseJSON(response)
+                    if (json_obj === "error"){
+                        $('#login_error').show()
+                        $('#login_ok').hide()
+                        $('#login_error_span').text("Contraseña incorrecta.")
+                    }else{
+                        $('#login_error').hide()
+                        $('#login_ok').show()
+                        $('#login_ok_span').text("Contraseña correcta.")
+                    }
+                },
+                error: (response) => {
+                    $('#login_error').hide()
+                    $('#login_ok').show()
+                    $('#login_ok_span').text("Contraseña correcta.")
+                }
+            })
+        }
+    </script>
+
+</body>
+
+</html>

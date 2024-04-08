@@ -1,0 +1,6 @@
+psycopg2
+scapy
+click
+termcolor
+tqdm
+impacket
