@@ -38,6 +38,7 @@ while True:
 [6] SysAdmin / Open HA Configuration editor
 [7] Wifi Hacking
 [8] Active Directory Hacking
+[9] Web Hacking
 [98] Custom command (SHELL)
 [99] Exit
 
@@ -62,6 +63,8 @@ Select operation: """
             et.wifi.main(RESULTS_PATH)
         case 8:
             et.ad.main(RESULTS_PATH)
+        case 9:
+            et.web.main(RESULTS_PATH)
         case 99:
             break
         case _:

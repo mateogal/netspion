@@ -33,7 +33,10 @@ DEPENDENCIES_LIST = [
     "lighttpd",
     "php-cgi",
     "cowpatty",
-    "responder"
+    "responder",
+    "whatweb",
+    "subfinder",
+    "gobuster"
 ]
 
 

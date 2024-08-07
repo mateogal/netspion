@@ -23,9 +23,12 @@
 > - [Lighttpd](https://www.lighttpd.net/)
 > - [Impacket](https://github.com/fortra/impacket)
 > - [Responder](https://github.com/lgandx/Responder)
+> - [Subfinder](https://github.com/projectdiscovery/subfinder)
+> - [WhatWeb](https://github.com/urbanadventurer/WhatWeb)
+> - [GoBuster](https://github.com/OJ/gobuster)
 
 > [!TIP]
-> Recommended additional tools:
+> Recommended additional tools/websites:
 > - [Maltego](https://www.maltego.com/)
 > - [Burpsuite](https://portswigger.net/burp/communitydownload)
 > - [Nessus](https://www.tenable.com/products/nessus/nessus-essentials)
@@ -35,6 +38,7 @@
 > - [Mimikatz](https://github.com/ParrotSec/mimikatz)
 > - [Rubeus](https://github.com/GhostPack/Rubeus)
 > - [Covenant](https://github.com/cobbr/Covenant)
+> - [SecList](https://github.com/danielmiessler/SecLists)
 
 # Useful commands
 
