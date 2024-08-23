@@ -26,6 +26,9 @@
 > - [Subfinder](https://github.com/projectdiscovery/subfinder)
 > - [WhatWeb](https://github.com/urbanadventurer/WhatWeb)
 > - [GoBuster](https://github.com/OJ/gobuster)
+> - [Ffuf](https://github.com/ffuf/ffuf)
+> - [Commix](https://github.com/commixproject/commix)
+> - [Wafw00f](https://github.com/EnableSecurity/wafw00f)
 
 > [!TIP]
 > Recommended additional tools/websites:
@@ -39,6 +42,11 @@
 > - [Rubeus](https://github.com/GhostPack/Rubeus)
 > - [Covenant](https://github.com/cobbr/Covenant)
 > - [SecList](https://github.com/danielmiessler/SecLists)
+> - [OWASP ZAProxy](https://github.com/zaproxy/zaproxy)
+> - [Nikto](https://github.com/sullo/nikto)
+> - [Nuclei](https://github.com/projectdiscovery/nuclei)
+> - [Git Leaks](https://github.com/gitleaks/gitleaks)
+> - [The Fat Rat](https://github.com/screetsec/TheFatRat)
 
 # Useful commands
 
@@ -56,12 +64,24 @@
 
 ``` use exploit/multi/handler ```
 
+### Module to scan TCP ports
+
+``` use auxiliary/scanner/portscan/tcp ```
+
 ### Module to exploit smb psexec
 
 ``` use exploit/windows/smb/psexec ```
+
+### Route traffic to session
+``` route add DST_IP DST_MASK SESSION_NUMBER```
 
 ## MSFVenom
 
 ### Generate custom payloads
 
 ``` msfvenom -p payload lhosts=XXX lport=XXXX ```
+
+## Meterpreter
+
+### Port Forwarding
+``` portfw add -l LOCAL_PORT -p REMOTE_PORT -r REMOTE_IP ```

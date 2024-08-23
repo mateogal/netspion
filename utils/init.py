@@ -36,7 +36,10 @@ DEPENDENCIES_LIST = [
     "responder",
     "whatweb",
     "subfinder",
-    "gobuster"
+    "gobuster",
+    "ffuf",
+    "commix",
+    "wafw00f"
 ]
 
 
