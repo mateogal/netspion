@@ -11,7 +11,7 @@
 ``` pip install -r requirements.txt ```  
 
 > [!NOTE]
-> Tools used and required:
+> Tools used and required (All credits to respective owners):
 > - [Metasploit](https://www.metasploit.com/)
 > - [SQLMap](https://sqlmap.org/)
 > - [Nmap](https://nmap.org)
@@ -31,7 +31,7 @@
 > - [Wafw00f](https://github.com/EnableSecurity/wafw00f)
 
 > [!TIP]
-> Recommended additional tools/websites:
+> Recommended additional tools/websites (All credits to respective owners):
 > - [Maltego](https://www.maltego.com/)
 > - [Burpsuite](https://portswigger.net/burp/communitydownload)
 > - [Nessus](https://www.tenable.com/products/nessus/nessus-essentials)
@@ -47,6 +47,7 @@
 > - [Nuclei](https://github.com/projectdiscovery/nuclei)
 > - [Git Leaks](https://github.com/gitleaks/gitleaks)
 > - [The Fat Rat](https://github.com/screetsec/TheFatRat)
+> - [Local Tunnel](https://github.com/localtunnel/localtunnel)
 
 # Useful commands
 

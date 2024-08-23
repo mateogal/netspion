@@ -1,16 +1,6 @@
 import subprocess
 import os
-from utils import string_format, run_task
-
-
-def check_vars(varList):
-    for var in varList:
-        if not var:
-            print("Required variables are empty")
-            return 0
-
-    return 1
-
+from utils import string_format, run_task, check_var
 
 def reloadConf(resultsPath):
     file = open(resultsPath + "saved.conf", "r")
@@ -39,7 +29,7 @@ def reloadConf(resultsPath):
 
 
 def deAuthAttack(wifi_bssid, adapter):
-    if check_vars([wifi_bssid, adapter]):
+    if check_var([wifi_bssid, adapter]):
         device_bssid = str(input("Device BSSID [blank all]: "))
         if device_bssid:
             run_task.newTerminal(
@@ -68,7 +58,7 @@ def deAuthAttack(wifi_bssid, adapter):
 
 
 def rogueAPAttack(ssid, ap_adapter, ap_channel, resultsPath):
-    if check_vars([ssid, ap_adapter, ap_channel]):
+    if check_var([ssid, ap_adapter, ap_channel]):
         out_interface = str(input("Output interface to masquerade traffic: "))
         dnsmasqConf = open(resultsPath + "dnsmasq.conf", "w")
         # Make cfgs
@@ -138,7 +128,7 @@ ignore_broadcast_ssid=0"""
 
 
 def cpAttack(ssid, resultsPath, capfile):
-    if check_vars([ssid]):
+    if check_var([ssid]):
         # Copy cfgs to tmp folder
         run_task.normalCapture(
             [
@@ -292,7 +282,7 @@ Select operation: """
 
             # Show available wifis
             case 3:
-                if check_vars([adapter]):
+                if check_var([adapter]):
                     run_task.normal(
                         [
                             "airodump-ng",
@@ -364,7 +354,7 @@ Select operation: """
 
             # Show WPS
             case 7:
-                if check_vars([adapter]):
+                if check_var([adapter]):
                     run_task.newTerminal(
                         [
                             "wash",
@@ -377,7 +367,7 @@ Select operation: """
 
             # WPS Crack
             case 8:
-                if check_vars([adapter, wifi_bssid, channel]):
+                if check_var([adapter, wifi_bssid, channel]):
                     run_task.normal(
                         [
                             "reaver",

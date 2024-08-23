@@ -1,7 +1,12 @@
 import subprocess
 import time
 import utils.init as init
+import readline
+import cmd
+from utils import custom_shell
 
+readline.set_completer_delims(" \t\n;")
+readline.parse_and_bind("tab: complete")
 subprocess.run(["clear"], shell=True)
 init.main()
 time.sleep(3)
@@ -69,6 +74,9 @@ Select operation: """
                 et.web.main(RESULTS_PATH)
             case 10:
                 et.evasion.main(RESULTS_PATH)
+            case 98:
+                custom_shell.main()
+                break
             case 99:
                 break
             case _:
