@@ -2,7 +2,6 @@ import subprocess
 import time
 import utils.init as init
 import readline
-import cmd
 from utils import custom_shell
 
 readline.set_completer_delims(" \t\n;")
@@ -12,7 +11,6 @@ init.main()
 time.sleep(3)
 
 import platform
-import os
 import click
 
 
@@ -46,7 +44,7 @@ while True:
 [8] Active Directory Hacking
 [9] Web Hacking
 [10] Evasion & Detection Tools
-[98] Custom command (SHELL)
+[98] Custom SHELL
 [99] Exit
 
 Select operation: """

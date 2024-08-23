@@ -37,7 +37,7 @@ Select operation: """
         print(" \n")
         match operation:
             case 1:  # LB detector
-
+                run_task.newTerminal(["lbd", domain])
                 break
             case 2:  # WAF Detector
                 url = str(input("URL: "))

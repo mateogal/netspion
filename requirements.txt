@@ -4,3 +4,4 @@ click
 termcolor
 tqdm
 impacket
+cmd2

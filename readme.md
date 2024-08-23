@@ -29,6 +29,7 @@
 > - [Ffuf](https://github.com/ffuf/ffuf)
 > - [Commix](https://github.com/commixproject/commix)
 > - [Wafw00f](https://github.com/EnableSecurity/wafw00f)
+> - [LoadBalancing detector](https://github.com/craig/ge.mine.nu/blob/master/lbd/lbd.sh)
 
 > [!TIP]
 > Recommended additional tools/websites (All credits to respective owners):
