@@ -2,8 +2,7 @@
 
 # Information
 > [!NOTE]
-> This tool has only useful pre-defined techniques.
-> You can use the SHELL directly for advanced/custom commands or techniques.
+> This tool has only useful pre-defined techniques with custom parameters.
 
 > [!IMPORTANT]
 > **Python 3.10+ required**  
