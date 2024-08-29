@@ -130,6 +130,6 @@ def checkRoot():
 
 
 def main():
-    PKG_INSTALLER, PKG_CHECK = checkOS()
-    checkDependencies(PKG_INSTALLER, PKG_CHECK)
     checkRoot()
+    PKG_INSTALLER, PKG_CHECK = checkOS()
+    checkDependencies(PKG_INSTALLER, PKG_CHECK)    

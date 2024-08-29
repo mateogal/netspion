@@ -1,12 +1,15 @@
-import cmd2, platform, subprocess
+import cmd2, platform, subprocess, os
 from cmd2 import CommandSet, with_default_category
 import utils.string_format as sf
 
 PLATFORM_SYSTEM = platform.system()
 
+
 @with_default_category("Main commands")
 class ADHacking(cmd2.Cmd):
-    intro = sf.text("KerErr Tools Active Directory Sub menu. Type help or ? to list commands and help/? COMMAND to show COMMAND help. \n")
+    intro = sf.text(
+        "KerErr Tools Active Directory Sub menu. Type help or ? to list commands and help/? COMMAND to show COMMAND help. \n"
+    )
     prompt = sf.success("(kererr AD-Hacking): ")
 
     def __init__(self):
@@ -15,7 +18,15 @@ class ADHacking(cmd2.Cmd):
         self.url = ""
         self.wordlist = ""
         self.add_settable(cmd2.Settable("url", str, "Domain URL", self))
-        self.add_settable(cmd2.Settable("wordlist", str, "Wordlist file path", self))
+        self.add_settable(
+            cmd2.Settable(
+                "wordlist",
+                str,
+                "Wordlist file path",
+                self,
+                completer=cmd2.Cmd.path_complete,
+            )
+        )
         self.default_category = "cmd2 Built-in Commands"
         self.remove_settable("debug")
         self.remove_settable("allow_style")
@@ -34,12 +45,13 @@ class ADHacking(cmd2.Cmd):
             + sf.success(self.resultsPath)
             + "\n"
         )
+        os.makedirs(self.resultsPath, exist_ok=True)
 
-    def do_clear(self):
+    def do_clear(self, arg):
         "Clear screen"
         subprocess.run(["clear"], shell=True)
 
 
 def main():
-    ADHacking().do_clear()
+    ADHacking().do_clear(1)
     ADHacking().cmdloop()

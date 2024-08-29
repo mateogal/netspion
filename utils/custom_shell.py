@@ -2,6 +2,7 @@ import cmd2, subprocess, platform
 import utils.run_task as rt
 import EthicalHacking.ActiveDirectory.custom_shell as ad_cs
 import EthicalHacking.Evasion.custom_shell as ev_cs
+import EthicalHacking.WebHacking.custom_shell as wh_cs
 import utils.string_format as sf
 from cmd2 import CommandSet, with_default_category
 
@@ -17,11 +18,7 @@ class SubMenuCommandSet(CommandSet):
 
     def do_web_hacking(self, arg):
         "Web Hacking tools sub menu"
-
-        class WebHacking(cmd2.Cmd):
-            prompt = "(kererr Web-Hacking): "
-
-        WebHacking().cmdloop()
+        wh_cs.main()
 
     def do_evasion(self, arg):
         "Evasion tools sub menu"

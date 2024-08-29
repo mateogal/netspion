@@ -44,7 +44,7 @@ while True:
 [8] Active Directory Hacking
 [9] Web Hacking
 [10] Evasion & Detection Tools
-[98] Custom SHELL
+[98] Custom SHELL (RECOMMENDED)
 [99] Exit
 
 Select operation: """

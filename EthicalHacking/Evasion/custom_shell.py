@@ -1,4 +1,4 @@
-import cmd2, subprocess, platform
+import cmd2, subprocess, platform, os
 import utils.run_task as rt
 from cmd2 import CommandSet, with_default_category
 import utils.string_format as sf
@@ -21,7 +21,15 @@ class EvasionShell(cmd2.Cmd):
         self.domain = ""
         self.wordlist = ""
         self.add_settable(cmd2.Settable("url", str, "Domain URL", self))
-        self.add_settable(cmd2.Settable("wordlist", str, "Wordlist file path", self))
+        self.add_settable(
+            cmd2.Settable(
+                "wordlist",
+                str,
+                "Wordlist file path",
+                self,
+                completer=cmd2.Cmd.path_complete,
+            )
+        )
         self.add_settable(cmd2.Settable("domain", str, "Domain", self))
         self.default_category = "cmd2 Built-in Commands"
         self.remove_settable("debug")
@@ -41,8 +49,9 @@ class EvasionShell(cmd2.Cmd):
             + sf.success(self.resultsPath)
             + "\n"
         )
+        os.makedirs(self.resultsPath, exist_ok=True)
 
-    def do_clear(self):
+    def do_clear(self, arg):
         "Clear screen"
         subprocess.run(["clear"], shell=True)
 
@@ -60,5 +69,5 @@ class EvasionShell(cmd2.Cmd):
 
 
 def main():
-    EvasionShell().do_clear()
+    EvasionShell().do_clear(1)
     EvasionShell().cmdloop()

@@ -34,7 +34,7 @@ def main(resultsPath):
 [4] Fuzzing URL Parameters
 [5] Fuzzing Request Parameters
 [6] Web Vuln Exploit (Commix)
-[97] Manually set variables
+[97] Set variables
 [98] Custom Command (SHELL)
 [99] Exit
 
@@ -53,14 +53,39 @@ Select operation: """
                             "-d",
                             domain,
                             "-oJ",
+                            "-o",
                             resultsPath + "subfinder.json",
                         ]
                     )
                 break
 
+            case 2:  # Find subdomains
+                run_task.newTerminal(
+                    [
+                        "gobuster",
+                        "dns",
+                        "-d",
+                        domain,
+                        "-w",
+                        wordlist,
+                        "-o",
+                        resultsPath + f"gobuster_{domain}.txt",
+                    ]
+                )
             case 3:  # GoBuster find directories
                 if check_var([url, wordlist]):
-                    run_task.newTerminal(["gobuster", "dir", "-u", url, "-w", wordlist])
+                    run_task.newTerminal(
+                        [
+                            "gobuster",
+                            "dir",
+                            "-u",
+                            url,
+                            "-w",
+                            wordlist,
+                            "-o",
+                            resultsPath + f"gobuster_{url}.txt",
+                        ]
+                    )
                 break
 
             case 4:  # Ffuf url
