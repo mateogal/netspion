@@ -1,4 +1,4 @@
-# Dev Repository. This project is still in development. It will be released to a different repository.
+# This project is still in development
 
 # Information
 > [!NOTE]
