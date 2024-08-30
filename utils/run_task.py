@@ -2,6 +2,36 @@ import subprocess
 import sys
 from tqdm import tqdm
 
+PROCS = []
+
+
+# Array of params
+def runBackground(command):
+    p = subprocess.Popen(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        stdin=subprocess.PIPE,
+        text=True,
+    )
+    PROCS.insert(len(PROCS), {"id": len(PROCS), "command": p.args, "proc": p})
+
+
+def showRunningProcs():
+    for value in PROCS:
+        if (value["proc"]).poll() == None:
+            print(f"ID: {value['id']} {str(value['command'])} RUNNING")
+        else:
+            PROCS.remove(value)
+
+
+def showProcessData(id):
+    while True:
+        try:
+            print((PROCS[id]["proc"]).stdout.readline())
+        except KeyboardInterrupt:
+            break
+
 
 # Receive an plain string for subprocess
 def progress(command):

@@ -1,66 +1,74 @@
-import subprocess
-import os
-import webbrowser
-from utils import string_format, run_task, check_var
-import click
+import cmd2, subprocess, platform, os
+import utils.run_task as rt
+from cmd2 import CommandSet, with_default_category
+import utils.string_format as sf
 
 
-def main(resultsPath):
-    resultsPath = resultsPath + "Evasion/"
-    os.makedirs(resultsPath, exist_ok=True)
+PLATFORM_SYSTEM = platform.system()
 
-    url = url = ""
 
-    while True:
-        print(string_format.title("EVASION & DETECTION TOOLS"))
-        print(
-            string_format.info("\n ALL RESULTS WILL BE STORED IN: ")
-            + string_format.success(resultsPath)
-        )
-        try:
-            operation = int(
-                input(
-                    """
-[1] Load Balancing Detector
-[2] WAF Detector
-[3] WAF Bypass Tools
-[4] Open C# script to generate .EXE ByPass
-[97] Manually set variables
-[98] Custom Command (SHELL)
-[99] Exit
+@with_default_category("Main commands")
+class EvasionShell(cmd2.Cmd):
+    intro = sf.text(
+        "KerErr Tools Evasion Sub menu. Type help or ? to list commands and help/? COMMAND to show COMMAND help. \n"
+    )
+    prompt = sf.success("(kererr Evasion): ")
 
-Select operation: """
-                )
+    def __init__(self):
+        super().__init__(auto_load_commands=False)
+        self.resultsPath = "/tmp/KerErrTools/Evasion/"
+        self.url = ""
+        self.domain = ""
+        self.wordlist = ""
+        self.add_settable(cmd2.Settable("url", str, "Domain URL", self))
+        self.add_settable(
+            cmd2.Settable(
+                "wordlist",
+                str,
+                "Wordlist file path",
+                self,
+                completer=cmd2.Cmd.path_complete,
             )
-        except:
-            operation = 0
-        print(" \n")
-        match operation:
-            case 1:  # LB detector
-                run_task.newTerminal(["lbd", domain])
-                break
-            case 2:  # WAF Detector
-                url = str(input("URL: "))
-                run_task.newTerminal(
-                    ["wafw00f", url, "-o", resultsPath + "wafw00f.json"]
-                )
-                break
-            case 3:  # WAF Bypass tools
-                webbrowser.open("https://waf-bypass.com/")
-                break
-            case 4:  # Open C# file
-                click.launch("./Evasion/Windows_Exec_ByPass.cs")
-                break
-            case 98:
-                print("THIS SECTION DOESN'T MAKE ANY LOG BY DEFAULT")
-                print("YOU NEED TO MAKE YOUR OWN LOG\n")
-                command = str(input("Command: "))
-                run_task.normalShell(command)
+        )
+        self.add_settable(cmd2.Settable("domain", str, "Domain", self))
+        self.default_category = "cmd2 Built-in Commands"
+        self.remove_settable("debug")
+        self.remove_settable("allow_style")
+        self.remove_settable("always_show_hint")
+        self.remove_settable("echo")
+        self.remove_settable("feedback_to_output")
+        self.remove_settable("max_completion_items")
+        self.remove_settable("quiet")
+        self.remove_settable("timing")
+        self.poutput(
+            sf.info("RUNNING ON: ")
+            + sf.success(PLATFORM_SYSTEM + platform.release() + platform.version())
+        )
+        self.poutput(
+            sf.info("ALL RESULTS WILL BE STORED IN: ")
+            + sf.success(self.resultsPath)
+            + "\n"
+        )
+        os.makedirs(self.resultsPath, exist_ok=True)
+        self.do_help("-v")
 
-            case 99:
-                break
-
-            case _:
-                print("No option available")
-        input("\nPress enter to continue ")
+    def do_clear(self, arg):
+        "Clear screen"
         subprocess.run(["clear"], shell=True)
+
+    def do_lb_detector(self):
+        "Load Balancing Detector (AGGRESSIVE)"
+        rt.runBackground(["lbd", self.domain])
+
+    def do_waf_detector(self):
+        "WAF URL detector"
+        rt.newTerminal(["wafw00f", self.url, "-o", self.resultsPath + "wafw00f.json"])
+
+    def do_csharp_bypass(self, arg):  # Open C# Antivirus Bypass script file
+        "C# script to bypass Antivirus"
+        self.do_edit("./EthicalHacking/Evasion/Windows_Exec_ByPass.cs")
+
+
+def main():
+    EvasionShell().do_clear(1)
+    EvasionShell().cmdloop()

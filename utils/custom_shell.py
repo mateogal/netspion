@@ -11,6 +11,23 @@ PLATFORM_SYSTEM = platform.system()
 RESULTS_PATH = "/tmp/KerErrTools/"
 
 
+@with_default_category("Utils")
+class SubMenu2CommandSet(CommandSet):
+    def __init__(self):
+        super().__init__()
+
+    def do_clear(self, arg):
+        "Clear screen"
+        subprocess.run(["clear"], shell=True)
+    
+    def do_show_processes(self, arg):
+        rt.showRunningProcs()
+    
+    def do_show_process_data(self, arg):
+        print(arg)
+        rt.showProcessData(arg)
+
+
 @with_default_category("Sub Menu Tools")
 class SubMenuCommandSet(CommandSet):
     def __init__(self):
@@ -98,13 +115,10 @@ class KerErrShell(cmd2.Cmd):
             sf.info("ALL RESULTS WILL BE STORED IN: ") + sf.success(RESULTS_PATH) + "\n"
         )
 
-    def do_clear(self, arg):
-        "Clear screen"
-        subprocess.run(["clear"], shell=True)
-
     def do_netcat(self, arg):
         "Netcat TCP connection listener: netcat PORT ADDR"
-        rt.newTerminal(["nc", "-l", "-p", self.port, "-s", self.addr, "-v"])
+        #rt.newTerminal(["nc", "-l", "-p", self.port, "-s", self.addr, "-v"])
+        rt.runBackground(["nc", "-l", "-p", self.port, "-s", self.addr, "-v"])
 
     def do_httpsrv(self, arg):
         "SimpleHTTP Python2 server on current path"
