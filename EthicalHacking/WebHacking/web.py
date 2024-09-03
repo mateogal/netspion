@@ -1,160 +1,199 @@
-import subprocess
-import os
-from utils import string_format, run_task, check_var
+import cmd2, subprocess, platform, os
+import utils.run_task as rt
+from cmd2 import CommandSet, with_default_category
+import utils.string_format as sf
+from utils.check_var import check_vars
+
+PLATFORM_SYSTEM = platform.system()
 
 
-def main(resultsPath):
-    resultsPath = resultsPath + "Web/"
-    os.makedirs(resultsPath, exist_ok=True)
+@with_default_category("Main commands")
+class WebHacking(cmd2.Cmd):
+    intro = sf.text(
+        "KerErr Tools Web Hacking sub menu. Type help or ? to list commands and help/? COMMAND to show COMMAND help. \n"
+    )
+    prompt = sf.success("(kererr WebHacking): ")
 
-    domain = url = wordlist = cookies = request_file = log_level = bodyData = ""
-
-    while True:
-        subprocess.run(["clear"], shell=True)
-        print(string_format.title("WEB HACKING"))
-        print(
-            string_format.info("\n ALL RESULTS WILL BE STORED IN: ")
-            + string_format.success(resultsPath)
-        )
-        print(string_format.info("\nCurrent variables values:\n"))
-        print("Domain:", string_format.text(domain))
-        print("URL:", string_format.text(url))
-        print("Wordlist Path:", string_format.text(wordlist))
-        print("Cookies String:", string_format.text(cookies))
-        print("Request File Path:", string_format.text(request_file))
-        print("Log level:", string_format.text(log_level))
-        print("Body Data:", string_format.text(bodyData))
-        try:
-            operation = int(
-                input(
-                    """
-[1] Find Subdomains (Subfinder)
-[2] Find Subdomains (GoBuster)
-[3] Find URL Directories (GoBuster)
-[4] Fuzzing URL Parameters
-[5] Fuzzing Request Parameters
-[6] Web Vuln Exploit (Commix)
-[97] Set variables
-[98] Custom Command (SHELL)
-[99] Exit
-
-Select operation: """
-                )
+    def __init__(self):
+        super().__init__(auto_load_commands=False)
+        self.resultsPath = "/tmp/KerErrTools/Web/"
+        self.url = ""
+        self.domain = ""
+        self.wordlist = ""
+        self.cookies = ""
+        self.request_file = ""
+        self.log_level = ""
+        self.bodyData = ""
+        self.add_settable(cmd2.Settable("url", str, "Domain URL", self))
+        self.add_settable(
+            cmd2.Settable(
+                "wordlist",
+                str,
+                "Wordlist file path",
+                self,
+                completer=cmd2.Cmd.path_complete,
             )
-        except:
-            operation = 0
-        print(" \n")
-        match operation:
-            case 1:  # Find Subdomains
-                if check_var([domain]):
-                    run_task.newTerminal(
-                        [
-                            "subfinder",
-                            "-d",
-                            domain,
-                            "-oJ",
-                            "-o",
-                            resultsPath + "subfinder.json",
-                        ]
-                    )
-                break
+        )
+        self.add_settable(cmd2.Settable("domain", str, "Domain", self))
+        self.add_settable(
+            cmd2.Settable(
+                "request_file",
+                str,
+                "Request file path",
+                self,
+                completer=cmd2.Cmd.path_complete,
+            )
+        )
+        self.add_settable(cmd2.Settable("log_level", str, "Log Level", self))
+        self.add_settable(cmd2.Settable("bodyData", str, "Body Data", self))
+        self.add_settable(cmd2.Settable("cookies", str, "Cookies", self))
+        self.default_category = "cmd2 Built-in Commands"
+        self.remove_settable("debug")
+        self.remove_settable("allow_style")
+        self.remove_settable("always_show_hint")
+        self.remove_settable("echo")
+        self.remove_settable("feedback_to_output")
+        self.remove_settable("max_completion_items")
+        self.remove_settable("quiet")
+        self.remove_settable("timing")
+        self.poutput(
+            sf.info("RUNNING ON: ")
+            + sf.success(PLATFORM_SYSTEM + platform.release() + platform.version())
+        )
+        self.poutput(
+            sf.info("ALL RESULTS WILL BE STORED IN: ")
+            + sf.success(self.resultsPath)
+            + "\n"
+        )
+        os.makedirs(self.resultsPath, exist_ok=True)
+        self.do_help("-v")
 
-            case 2:  # Find subdomains
-                run_task.newTerminal(
-                    [
-                        "gobuster",
-                        "dns",
-                        "-d",
-                        domain,
-                        "-w",
-                        wordlist,
-                        "-o",
-                        resultsPath + f"gobuster_{domain}.txt",
-                    ]
-                )
-            case 3:  # GoBuster find directories
-                if check_var([url, wordlist]):
-                    run_task.newTerminal(
-                        [
-                            "gobuster",
-                            "dir",
-                            "-u",
-                            url,
-                            "-w",
-                            wordlist,
-                            "-o",
-                            resultsPath + f"gobuster_{url}.txt",
-                        ]
-                    )
-                break
-
-            case 4:  # Ffuf url
-                if check_var([url, wordlist]):
-                    run_task.newTerminal(
-                        [
-                            "ffuf",
-                            "-u",
-                            url,
-                            "-w",
-                            wordlist,
-                            "-recursion",
-                            "-o",
-                            resultsPath + "ffuf_url_parameters.json",
-                        ]
-                    )
-                break
-
-            case 5:  # Ffuf request file
-                if check_var([request_file, wordlist]):
-                    run_task.newTerminal(
-                        [
-                            "ffuf",
-                            "-request",
-                            request_file,
-                            "-w",
-                            wordlist,
-                            "-o",
-                            resultsPath + "ffuf_request_parameters.json",
-                        ]
-                    )
-                break
-
-            case 6:  # Vuln Exploit Commix
-                if check_var([url, log_level, cookies, bodyData]):
-                    run_task.newTerminal(
-                        [
-                            "commix",
-                            "-u",
-                            url,
-                            "--level",
-                            log_level,
-                            "--cookie=" + cookies,
-                            "--data=" + bodyData,
-                            "--output-dir=" + resultsPath,
-                        ]
-                    )
-                break
-
-            # Change variables
-            case 97:
-                print(string_format.warning("Empty field = current value \n"))
-                domain = str(input("Domain: ") or domain)
-                url = str(input("URL: ") or url)
-                request_file = str(input("Request File Path: ") or request_file)
-                cookies = str(input("Cookies String: ") or cookies)
-                bodyData = str(input("Body Data: ") or bodyData)
-                log_level = str(input("Log Level [1-3]: ") or log_level)
-                wordlist = str(input("Wordlist path: ") or wordlist)
-            case 98:
-                print("THIS SECTION DOESN'T MAKE ANY LOG BY DEFAULT")
-                print("YOU NEED TO MAKE YOUR OWN LOG\n")
-                command = str(input("Command: "))
-                run_task.normalShell(command)
-
-            case 99:
-                break
-
-            case _:
-                print("No option available")
-        input("\nPress enter to continue ")
+    def do_clear(self, arg):
+        "Clear screen"
         subprocess.run(["clear"], shell=True)
+
+    def do_find_subdomains_sf(self, arg):  # Subfinder
+        "Subdomain Finder (SubFinder)"
+        if check_vars([{"name": "domain", "value": self.domain}]):
+            rt.runBackground(
+                [
+                    "subfinder",
+                    "-d",
+                    self.domain,
+                    "-oJ",
+                    "-o",
+                    self.resultsPath + f"subfinder{self.domain}.json",
+                ]
+            )
+
+    def do_find_subdomains_gb(self, arg):  # GoBuster
+        "Subdomain Finder (GoBuster)"
+        if check_vars(
+            [
+                {"name": "domain", "value": self.domain},
+                {"name": "wordlist", "value": self.wordlist},
+            ]
+        ):
+            rt.runBackground(
+                [
+                    "gobuster",
+                    "dns",
+                    "-d",
+                    self.domain,
+                    "-w",
+                    self.wordlist,
+                    "-o",
+                    self.resultsPath + f"gobuster_{self.domain}.txt",
+                ]
+            )
+
+    def do_find_url_directories(self, arg):  # URL directories Finder
+        "URL directories finder (GoBuster)"
+        if check_vars(
+            [
+                {"name": "url", "value": self.url},
+                {"name": "wordlist", "value": self.wordlist},
+            ]
+        ):
+            rt.runBackground(
+                [
+                    "gobuster",
+                    "dir",
+                    "-u",
+                    self.url,
+                    "-w",
+                    self.wordlist,
+                    "-o",
+                    self.resultsPath + f"gobuster_{self.url}.txt",
+                ]
+            )
+
+    def do_fuzzing_url_params(self, arg):  # URL params fuzz
+        "URL parameters fuzz (Ffuf)"
+        if check_vars(
+            [
+                {"name": "url", "value": self.url},
+                {"name": "wordlist", "value": self.wordlist},
+            ]
+        ):
+            rt.runBackground(
+                [
+                    "ffuf",
+                    "-u",
+                    self.url,
+                    "-w",
+                    self.wordlist,
+                    "-recursion",
+                    "-o",
+                    self.resultsPath + f"ffuf_url_parameters{self.url}.json",
+                ]
+            )
+
+    def do_fuzzing_req_file(self, arg):  # Fuzzing from request file
+        "Request file fuzz (Ffuf)"
+        if check_vars(
+            [
+                {"name": "requesT_file", "value": self.request_file},
+                {"name": "wordlist", "value": self.wordlist},
+            ]
+        ):
+            rt.newTerminal(
+                [
+                    "ffuf",
+                    "-request",
+                    self.request_file,
+                    "-w",
+                    self.wordlist,
+                    "-o",
+                    self.resultsPath
+                    + f"ffuf_request_parameters{self.request_file}.json",
+                ]
+            )
+
+    def do_web_vuln_exploit(self, arg):  # Web Vulnerabilities exploit
+        "Exploit Web Vulnerabilities (Commix)"
+        if check_vars(
+            [
+                {"name": "url", "value": self.url},
+                {"name": "log_level", "value": self.log_level},
+                {"name": "cookies", "value": self.cookies},
+                {"name": "bodyData", "value": self.bodyData},
+            ]
+        ):
+            rt.newTerminal(
+                [
+                    "commix",
+                    "-u",
+                    self.url,
+                    "--level",
+                    self.log_level,
+                    "--cookie=" + self.cookies,
+                    "--data=" + self.bodyData,
+                    "--output-dir=" + self.resultsPath,
+                ]
+            )
+
+
+def main():
+    WebHacking().do_clear(1)
+    WebHacking().cmdloop()

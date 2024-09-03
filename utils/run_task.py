@@ -1,20 +1,29 @@
 import subprocess
 import sys
 from tqdm import tqdm
+from datetime import datetime
+import os
 
 PROCS = []
 
 
 # Array of params
 def runBackground(command):
+    os.makedirs("/tmp/KerErrTools/processes/", exist_ok=True)
+    file_path = f"/tmp/KerErrTools/processes/{command[0]}_{datetime.now()}"
+    f_out = open(f"{file_path}.out", "w")
+    f_err = open(f"{file_path}.err", "w")
     p = subprocess.Popen(
         command,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        stdout=f_out,
+        stderr=f_err,
         stdin=subprocess.PIPE,
         text=True,
     )
-    PROCS.insert(len(PROCS), {"id": len(PROCS), "command": p.args, "proc": p})
+    PROCS.insert(
+        len(PROCS),
+        {"id": len(PROCS), "command": p.args, "proc": p, "out": f_out, "err": f_err},
+    )
 
 
 def showRunningProcs():
@@ -22,15 +31,22 @@ def showRunningProcs():
         if (value["proc"]).poll() == None:
             print(f"ID: {value['id']} {str(value['command'])} RUNNING")
         else:
-            PROCS.remove(value)
+            print(f"ID: {value['id']} {str(value['command'])} FINISHED")
+            value["out"].close()
+            value["err"].close()
 
 
 def showProcessData(id):
-    while True:
-        try:
-            print((PROCS[id]["proc"]).stdout.readline())
-        except KeyboardInterrupt:
-            break
+    if (PROCS[id]["proc"]).poll() == None:
+        while True:
+            try:
+                print((PROCS[id]["proc"]).stdout.readline())
+            except KeyboardInterrupt:
+                break
+    else:
+        f = open((PROCS[id]["out"]).name, "r")
+        print(f.read())
+        f.close()
 
 
 # Receive an plain string for subprocess

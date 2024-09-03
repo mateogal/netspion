@@ -1,9 +1,10 @@
 import cmd2, subprocess, platform, time
 import utils.init as init
 import utils.run_task as rt
-import EthicalHacking.ActiveDirectory.custom_shell as ad_cs
+import EthicalHacking.ActiveDirectory.ad as ad_cs
 import EthicalHacking.Evasion.evasion as evasion
-import EthicalHacking.WebHacking.custom_shell as wh_cs
+import EthicalHacking.WebHacking.web as wh_cs
+import EthicalHacking.Passwords.password_crack as pc
 import utils.string_format as sf
 from cmd2 import CommandSet, with_default_category
 
@@ -31,9 +32,8 @@ class SubMenu2CommandSet(CommandSet):
         rt.showRunningProcs()
 
     def do_show_process_data(self, arg):
-        "Show specific process output"
-        print(arg)
-        rt.showProcessData(arg)
+        "Show specific process output (Log Location: /tmp/KerErrTools/processes/)"
+        rt.showProcessData(int(arg))
 
     def do_exec_mode(self, arg):
         "Set execution mode (N: run task in new terminal) / (B: run task in background)"
@@ -48,6 +48,10 @@ class SubMenuCommandSet(CommandSet):
     def do_web_hacking(self, arg):
         "Web Hacking tools sub menu"
         wh_cs.main()
+
+    def do_password_crack(self, arg):
+        "Password cracking tools sub menu"
+        pc.main()
 
     def do_evasion(self, arg):
         "Evasion tools sub menu"

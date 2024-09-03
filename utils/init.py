@@ -23,7 +23,7 @@ DEPENDENCIES_LIST = [
     "aircrack-ng",
     "hostapd",
     "metasploit-framework",
-    "theHarvester",
+    "theharvester",
     "nmap",
     "whois",
     "qterminal",
@@ -39,7 +39,8 @@ DEPENDENCIES_LIST = [
     "gobuster",
     "ffuf",
     "commix",
-    "wafw00f"
+    "wafw00f",
+    "hashcat"
 ]
 
 

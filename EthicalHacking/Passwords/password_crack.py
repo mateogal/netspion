@@ -1,63 +1,152 @@
-import platform
-import subprocess
-
-OUTPUT_LOCATION = "/tmp/PasswordCrack/"
-subprocess.run(["mkdir", OUTPUT_LOCATION])
+import cmd2, subprocess, platform, os
+import utils.run_task as rt
+from cmd2 import CommandSet, with_default_category
+import utils.string_format as sf
+from utils.check_var import check_vars
+from datetime import datetime
 
 PLATFORM_SYSTEM = platform.system()
 
-subprocess.run(["clear"], shell=True)
-print("Running on:", PLATFORM_SYSTEM, platform.release(), platform.version())
 
-type = url = file = ""
-
-while True:
-    print("ALL RESULTS WILL BE STORED IN " + OUTPUT_LOCATION)
-    operation = int(
-        input(
-            """
-[1] Hashcat Brute Force
-[2] Hashcat Dictionary
-[3] JohnTheRipper Brute Force
-[4] JohnTheRipper Dictionary
-[9] Custom command (SHELL)
-[0] Exit
-Select operation: """
-        )
+@with_default_category("Main commands")
+class PasswordCrackingShell(cmd2.Cmd):
+    intro = sf.text(
+        "KerErr Tools Password Cracking Sub menu. Type help or ? to list commands and help/? COMMAND to show COMMAND help. \n"
     )
-    subprocess.run(["clear"], shell=True)
-    match operation:
-        case 1:
-            encode = str(input("Hashcat Encode type code [default:auto]: "))
-            file = str(input("Hash file path: "))
-            if encode:
-                subprocess.run(["hashcat", "-m", encode, "-a", "3", file])
-            else:
-                subprocess.run(["hashcat", "-a", "3", file])
-        case 2:
-            encode = str(input("Hashcat Encode type code [default:auto]: "))
-            file = str(input("Hash file path: "))
-            dictionary = str(input("Dictionary file path: "))
-            if encode:
-                subprocess.run(["hashcat", "-m", encode, "-a", "0", file, dictionary])
-            else:
-                subprocess.run(["hashcat", "-a", "0", file, dictionary])
-        case 3:
-            encode = str(input("JohnTheRipper Encode type [default:auto]: "))
-            file = str(input("Hash file path: "))
-            if encode:
-                subprocess.run(["john", "--format=" + encode, file])
-            else:
-                subprocess.run(["john", file])
-        case 4:
-            break
-        case 9:
-            print("THIS SECTION DOESN'T MAKE ANY LOG BY DEFAULT")
-            print("YOU NEED TO MAKE YOUR OWN LOG\n")
-            command = str(input("Command: "))
-            subprocess.run([command], shell=True)
-        case 0:
-            break
+    prompt = sf.success("(kererr Pwd-Crack): ")
 
-    input("\nPress any key to continue ")
-    subprocess.run(["clear"], shell=True)
+    def __init__(self):
+        super().__init__(auto_load_commands=False)
+        self.resultsPath = "/tmp/KerErrTools/PasswordCrack/"
+        self.encode = "*"
+        self.hash_file = ""
+        self.wordlist = ""
+        self.add_settable(
+            cmd2.Settable("encode", str, "Encode type [default: auto]", self)
+        )
+        self.add_settable(
+            cmd2.Settable(
+                "wordlist",
+                str,
+                "Wordlist file path",
+                self,
+                completer=cmd2.Cmd.path_complete,
+            )
+        )
+        self.add_settable(
+            cmd2.Settable(
+                "hash_file",
+                str,
+                "Hash file path",
+                self,
+                completer=cmd2.Cmd.path_complete,
+            )
+        )
+        self.default_category = "cmd2 Built-in Commands"
+        self.remove_settable("debug")
+        self.remove_settable("allow_style")
+        self.remove_settable("always_show_hint")
+        self.remove_settable("echo")
+        self.remove_settable("feedback_to_output")
+        self.remove_settable("max_completion_items")
+        self.remove_settable("quiet")
+        self.remove_settable("timing")
+        self.poutput(
+            sf.info("RUNNING ON: ")
+            + sf.success(PLATFORM_SYSTEM + platform.release() + platform.version())
+        )
+        self.poutput(
+            sf.info("ALL RESULTS WILL BE STORED IN: ")
+            + sf.success(self.resultsPath)
+            + "\n"
+        )
+        os.makedirs(self.resultsPath, exist_ok=True)
+        self.do_help("-v")
+
+    def do_clear(self, arg):
+        "Clear screen"
+        subprocess.run(["clear"], shell=True)
+
+    def do_hashcat_bf(self, arg):
+        "Hashcat brute force password crack"
+        if check_vars(
+            [
+                {"name": "encode", "value": self.encode},
+                {"name": "hash_file", "value": self.hash_file},
+            ]
+        ):
+            if self.encode == "*":
+                rt.runBackground(
+                    [
+                        "hashcat",
+                        "-a",
+                        "3",
+                        self.hash_file,
+                    ]
+                )
+            else:
+                rt.runBackground(
+                    [
+                        "hashcat",
+                        "-m",
+                        self.encode,
+                        "-a",
+                        "3",
+                        self.hash_file,
+                    ]
+                )
+
+    def do_hashcat_wl(self, arg):
+        "Hashcat wordlist file (dictionary) password crack"
+        if check_vars(
+            [
+                {"name": "encode", "value": self.encode},
+                {"name": "hash_file", "value": self.hash_file},
+                {"name": "wordlist", "value": self.wordlist},
+            ]
+        ):
+            rt.runBackground(
+                [
+                    "hashcat",
+                    "-m",
+                    self.encode,
+                    "-a",
+                    "0",
+                    self.hash_file,
+                    self.wordlist,
+                ]
+            )
+
+    def do_john_bf(self, arg):
+        "JohnTheRipper brute force password crack"
+        if check_vars(
+            [
+                {"name": "encode", "value": self.encode},
+                {"name": "hash_file", "value": self.hash_file},
+            ]
+        ):
+            rt.runBackground(["john", "--format=" + self.encode, self.hash_file])
+
+    def do_john_wl(self, arg):
+        "JohnTheRipper wordlist file (dictionary) password crack"
+        if check_vars(
+            [
+                {"name": "encode", "value": self.encode},
+                {"name": "hash_file", "value": self.hash_file},
+                {"name": "wordlist", "value": self.wordlist},
+            ]
+        ):
+            rt.runBackground(
+                [
+                    "john",
+                    "--format=" + self.encode,
+                    "--wordlist=",
+                    self.wordlist,
+                    self.hash_file,
+                ]
+            )
+
+
+def main():
+    PasswordCrackingShell().do_clear(1)
+    PasswordCrackingShell().cmdloop()

@@ -1,7 +1,13 @@
-def check_vars(varList):
-    for var in varList:
-        if not var:
-            print("Required variables are empty")
-            return 0
+from . import string_format as sf
 
-    return 1
+
+def check_vars(varList):
+    msg = ""
+    for var in varList:
+        if var["value"] == "":
+            msg += f"{var['name']}, "
+    if msg != "":
+        print(sf.fail(f"{msg}variables are empty."))
+        return 0
+    else:
+        return 1

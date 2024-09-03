@@ -1,7 +1,7 @@
-psycopg2
 scapy
 click
 termcolor
 tqdm
 impacket
 cmd2
+psycopg2
