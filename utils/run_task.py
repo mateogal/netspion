@@ -9,8 +9,8 @@ PROCS = []
 
 # Array of params
 def runBackground(command):
-    os.makedirs("/tmp/KerErrTools/processes/", exist_ok=True)
-    file_path = f"/tmp/KerErrTools/processes/{command[0]}_{datetime.now()}"
+    os.makedirs("/tmp/netspion/processes/", exist_ok=True)
+    file_path = f"/tmp/netspion/processes/{command[0]}_{datetime.now()}"
     f_out = open(f"{file_path}.out", "w")
     f_err = open(f"{file_path}.err", "w")
     p = subprocess.Popen(

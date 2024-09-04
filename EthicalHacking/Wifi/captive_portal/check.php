@@ -1,7 +1,7 @@
 <?php
 
-$ATTEMPT_FILE = "/tmp/KerErrTools/Wifi/captive_portal/attempt.txt";
-$HIT_FILE = "/tmp/KerErrTools/Wifi/captive_portal/hit.txt";
+$ATTEMPT_FILE = "/tmp/netspion/Wifi/captive_portal/attempt.txt";
+$HIT_FILE = "/tmp/netspion/Wifi/captive_portal/hit.txt";
 $CAP_FILE = "CAP_FILE_PATH";
 $SSID = "WIFI_SSID";
 

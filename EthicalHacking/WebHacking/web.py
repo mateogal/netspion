@@ -10,13 +10,13 @@ PLATFORM_SYSTEM = platform.system()
 @with_default_category("Main commands")
 class WebHacking(cmd2.Cmd):
     intro = sf.text(
-        "KerErr Tools Web Hacking sub menu. Type help or ? to list commands and help/? COMMAND to show COMMAND help. \n"
+        "netspion Tools Web Hacking sub menu. Type help or ? to list commands and help/? COMMAND to show COMMAND help. \n"
     )
-    prompt = sf.success("(kererr WebHacking): ")
+    prompt = sf.success("(netspion WebHacking): ")
 
     def __init__(self):
         super().__init__(auto_load_commands=False)
-        self.resultsPath = "/tmp/KerErrTools/Web/"
+        self.resultsPath = "/tmp/netspion/Web/"
         self.url = ""
         self.domain = ""
         self.wordlist = ""

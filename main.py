@@ -12,7 +12,7 @@ import platform
 
 PLATFORM_SYSTEM = platform.system()
 
-RESULTS_PATH = "/tmp/KerErrTools/"
+RESULTS_PATH = "/tmp/netspion/"
 
 init.main()
 time.sleep(3)
@@ -32,7 +32,7 @@ class SubMenu2CommandSet(CommandSet):
         rt.showRunningProcs()
 
     def do_show_process_data(self, arg):
-        "Show specific process output (Log Location: /tmp/KerErrTools/processes/)"
+        "Show specific process output (Log Location: /tmp/netspion/processes/)"
         rt.showProcessData(int(arg))
 
     def do_exec_mode(self, arg):
@@ -61,7 +61,7 @@ class SubMenuCommandSet(CommandSet):
         "Wifi Hacking tools sub menu"
 
         class WifiHacking(cmd2.Cmd):
-            prompt = "(kererr Wifi-Hacking): "
+            prompt = "(netspion Wifi-Hacking): "
 
         WifiHacking().cmdloop()
 
@@ -73,7 +73,7 @@ class SubMenuCommandSet(CommandSet):
         "Information Gathering Active hacking tools sub menu"
 
         class IGActive(cmd2.Cmd):
-            prompt = "(kererr IG-Active): "
+            prompt = "(netspion IG-Active): "
 
         IGActive().cmdloop()
 
@@ -81,13 +81,13 @@ class SubMenuCommandSet(CommandSet):
         "Information Gathering Passive hacking tools sub menu"
 
         class IGPassive(cmd2.Cmd):
-            prompt = "(kererr IG-Passive): "
+            prompt = "(netspion IG-Passive): "
 
         IGPassive().cmdloop()
 
 
 @with_default_category("Main commands")
-class KerErrShell(cmd2.Cmd):
+class NetspionShell(cmd2.Cmd):
     delattr(cmd2.Cmd, "do_run_pyscript")
     delattr(cmd2.Cmd, "do_run_script")
 
@@ -98,9 +98,9 @@ class KerErrShell(cmd2.Cmd):
         self.addr = "127.0.0.1"
         self.mode = "B"
         self.intro = sf.text(
-            "Welcome to KerErr Tools custom Shell. Type help or ? to list commands and help/? COMMAND to show COMMAND help. \n"
+            "Welcome to Netspion custom Shell. Type help or ? to list commands and help/? COMMAND to show COMMAND help. \n"
         )
-        self.prompt = sf.success("(kererr): ")
+        self.prompt = sf.success("(netspion): ")
         self.add_settable(cmd2.Settable("port", str, "Port", self))
         self.add_settable(cmd2.Settable("addr", str, "IP Address", self))
         self.default_category = "cmd2 Built-in Commands"
@@ -115,12 +115,14 @@ class KerErrShell(cmd2.Cmd):
         self.poutput(
             sf.warning(
                 """
- ____  __.          ___________               ___________           .__          
-|    |/ _|__________\_   _____/_____________  \__    ___/___   ____ |  |   ______
-|      <_/ __ \_  __ \    __)_\_  __ \_  __ \   |    | /  _ \ /  _ \|  |  /  ___/
-|    |  \  ___/|  | \/        \|  | \/|  | \/   |    |(  <_> |  <_> )  |__\___ \ 
-|____|__ \___  >__| /_______  /|__|   |__|      |____| \____/ \____/|____/____  >
-        \/   \/             \/                                                \/ 
+  _   _      _             _             
+ | \ | |    | |           (_)            
+ |  \| | ___| |_ ___ _ __  _  ___  _ __  
+ | . ` |/ _ \ __/ __| '_ \| |/ _ \| '_ \ 
+ | |\  |  __/ |_\__ \ |_) | | (_) | | | |
+ |_| \_|\___|\__|___/ .__/|_|\___/|_| |_|
+                    | |                  
+                    |_|                  
 """
             )
         )
@@ -143,15 +145,15 @@ class KerErrShell(cmd2.Cmd):
         rt.newTerminal(["python2", "-m", "SimpleHTTPServer"])
 
     def do_smbsrv(self, arg):
-        "SMB2 Server Impacket on /tmp/KerErrTools/SMBServer"
+        "SMB2 Server Impacket on /tmp/netspion/SMBServer"
         rt.newTerminal(
             [
                 "impacket-smbserver",
                 "-smb2support",
-                "KerErrSMB",
-                "/tmp/KerErrTools/SMBServer/",
+                "netspionSMB",
+                "/tmp/netspion/SMBServer/",
             ]
         )
 
 
-KerErrShell().cmdloop()
+NetspionShell().cmdloop()

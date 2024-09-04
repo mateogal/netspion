@@ -10,13 +10,13 @@ PLATFORM_SYSTEM = platform.system()
 @with_default_category("Main commands")
 class EvasionShell(cmd2.Cmd):
     intro = sf.text(
-        "KerErr Tools Evasion Sub menu. Type help or ? to list commands and help/? COMMAND to show COMMAND help. \n"
+        "netspion Tools Evasion Sub menu. Type help or ? to list commands and help/? COMMAND to show COMMAND help. \n"
     )
-    prompt = sf.success("(kererr Evasion): ")
+    prompt = sf.success("(netspion Evasion): ")
 
     def __init__(self):
         super().__init__(auto_load_commands=False)
-        self.resultsPath = "/tmp/KerErrTools/Evasion/"
+        self.resultsPath = "/tmp/netspion/Evasion/"
         self.url = ""
         self.domain = ""
         self.wordlist = ""

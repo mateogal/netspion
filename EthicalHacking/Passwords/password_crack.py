@@ -11,13 +11,13 @@ PLATFORM_SYSTEM = platform.system()
 @with_default_category("Main commands")
 class PasswordCrackingShell(cmd2.Cmd):
     intro = sf.text(
-        "KerErr Tools Password Cracking Sub menu. Type help or ? to list commands and help/? COMMAND to show COMMAND help. \n"
+        "netspion Tools Password Cracking Sub menu. Type help or ? to list commands and help/? COMMAND to show COMMAND help. \n"
     )
-    prompt = sf.success("(kererr Pwd-Crack): ")
+    prompt = sf.success("(netspion Pwd-Crack): ")
 
     def __init__(self):
         super().__init__(auto_load_commands=False)
-        self.resultsPath = "/tmp/KerErrTools/PasswordCrack/"
+        self.resultsPath = "/tmp/netspion/PasswordCrack/"
         self.encode = "*"
         self.hash_file = ""
         self.wordlist = ""
