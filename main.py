@@ -1,11 +1,13 @@
-import cmd2, subprocess, platform, time
+import cmd2, platform, time
 import utils.init as init
 import utils.run_task as rt
 import ActiveDirectory.ad as ad_cs
 import Evasion.evasion as evasion
 import WebHacking.web as wh_cs
 import Passwords.password_crack as pc
+import InformationGathering.active_info as aig
 import utils.string_format as sf
+import utils.utils_shell
 from cmd2 import CommandSet, with_default_category
 
 import platform
@@ -16,28 +18,6 @@ RESULTS_PATH = "/tmp/netspion/"
 
 init.main()
 time.sleep(3)
-
-
-@with_default_category("Utils")
-class SubMenu2CommandSet(CommandSet):
-    def __init__(self):
-        super().__init__()
-
-    def do_clear(self, arg):
-        "Clear screen"
-        subprocess.run(["clear"], shell=True)
-
-    def do_show_processes(self, arg):
-        "Show current running processes"
-        rt.showRunningProcs()
-
-    def do_show_process_data(self, arg):
-        "Show specific process output (Log Location: /tmp/netspion/processes/)"
-        rt.showProcessData(int(arg))
-
-    def do_exec_mode(self, arg):
-        "Set execution mode (N: run task in new terminal) / (B: run task in background)"
-        self.mode = arg
 
 
 @with_default_category("Sub Menu Tools")
@@ -72,10 +52,7 @@ class SubMenuCommandSet(CommandSet):
     def do_active_info(self, arg):
         "Information Gathering Active hacking tools sub menu"
 
-        class IGActive(cmd2.Cmd):
-            prompt = "(netspion IG-Active): "
-
-        IGActive().cmdloop()
+        aig.main()
 
     def do_passive_info(self, arg):
         "Information Gathering Passive hacking tools sub menu"
@@ -98,7 +75,7 @@ class NetspionShell(cmd2.Cmd):
         self.addr = "127.0.0.1"
         self.mode = "B"
         self.intro = sf.text(
-            "Welcome to Netspion custom Shell. Type help or ? to list commands and help/? COMMAND to show COMMAND help. \n"
+            "\nWelcome to Netspion custom shell. Use 'help / help -v' for verbose / 'help <topic>' for details. \n"
         )
         self.prompt = sf.success("(netspion): ")
         self.add_settable(cmd2.Settable("port", str, "Port", self))
@@ -131,28 +108,28 @@ class NetspionShell(cmd2.Cmd):
             + sf.success(PLATFORM_SYSTEM + platform.release() + platform.version())
         )
         self.poutput(
-            sf.info("ALL RESULTS WILL BE STORED IN: ") + sf.success(RESULTS_PATH) + "\n"
+            sf.info("ALL RESULTS WILL BE STORED IN: ") + sf.success(RESULTS_PATH)
         )
-        self.do_help("-v")
 
     def do_netcat(self, arg):
         "Netcat TCP connection listener: netcat PORT ADDR"
         # rt.newTerminal(["nc", "-l", "-p", self.port, "-s", self.addr, "-v"])
-        rt.runBackground(["nc", "-l", "-p", self.port, "-s", self.addr, "-v"])
+        rt.runBackground(["nc", "-l", "-p", self.port, "-s", self.addr, "-v"], None)
 
     def do_httpsrv(self, arg):
         "SimpleHTTP Python2 server on current path"
-        rt.newTerminal(["python2", "-m", "SimpleHTTPServer"])
+        rt.runBackground(["python2", "-m", "SimpleHTTPServer"], None)
 
     def do_smbsrv(self, arg):
         "SMB2 Server Impacket on /tmp/netspion/SMBServer"
-        rt.newTerminal(
+        rt.runBackground(
             [
                 "impacket-smbserver",
                 "-smb2support",
                 "netspionSMB",
                 "/tmp/netspion/SMBServer/",
-            ]
+            ],
+            None,
         )
 
 
