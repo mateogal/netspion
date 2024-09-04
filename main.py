@@ -1,10 +1,10 @@
 import cmd2, subprocess, platform, time
 import utils.init as init
 import utils.run_task as rt
-import EthicalHacking.ActiveDirectory.ad as ad_cs
-import EthicalHacking.Evasion.evasion as evasion
-import EthicalHacking.WebHacking.web as wh_cs
-import EthicalHacking.Passwords.password_crack as pc
+import ActiveDirectory.ad as ad_cs
+import Evasion.evasion as evasion
+import WebHacking.web as wh_cs
+import Passwords.password_crack as pc
 import utils.string_format as sf
 from cmd2 import CommandSet, with_default_category
 
