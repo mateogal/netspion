@@ -1,15 +1,16 @@
 # This project is still in development
 
-# Information
+# Netspion
 > [!NOTE]
-> This tool has only useful pre-defined techniques with custom parameters.
+> Netspion is a tool with useful pre-defined techniques for ethical hacking.  
+> You can execute directly to shell inside of Netspion if you want to run some custom commands.
 
 > [!IMPORTANT]
 > **Python 3.10+ required**  
 > You must install all the requirements to run the scripts without errors.  
 ``` pip install -r requirements.txt ```  
 
-> [!NOTE]
+> [!IMPORTANT]
 > Tools used and required (All credits to respective owners):
 > - [Metasploit](https://www.metasploit.com/)
 > - [SQLMap](https://sqlmap.org/)
