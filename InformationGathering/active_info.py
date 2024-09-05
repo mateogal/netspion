@@ -1,175 +1,85 @@
-import subprocess
-import os
+import cmd2, subprocess, platform, os
+import utils.run_task as rt
+from cmd2 import CommandSet, with_default_category
+import utils.string_format as sf
+from utils.check_var import check_vars
+from utils.utils_shell import UtilsCommandSet
+import asyncio
+
+PLATFORM_SYSTEM = platform.system()
 
 
-def main(resultsPath):
-    resultsPath = resultsPath + "ActiveInfo/"
-    os.makedirs(resultsPath, exist_ok=True)
-    while True:
-        print("Information Gathering / Active Information\n")
-        print("ALL RESULTS WILL BE STORED IN " + resultsPath)
-        operation = int(
-            input(
-                """
-[1] Nmap Host Discovery
-[2] Nmap Port Scan (SYN)
-[3] Nmap Port Scan (TCP)
-[4] Nmap Port Scan (UDP)
-[5] Nmap Aggressive scan
-[6] Nmap SMB Enumeration
-[7] Nmap SNMP Enumeration
-[8] Nslookup & DIG
-[9] Nmap Port Scan (Packet Fragment)
-[10] Nmap Port Scan (Decoy)
-[11] Nmap Port Scan (IP Spoof)
-[98] Custom command (SHELL)
-[99] Exit
+@with_default_category("Main commands")
+class ActiveIGShell(cmd2.Cmd):
+    intro = sf.text(
+        "Netspion Active Info-Gath Sub menu. Use 'help / help -v' for verbose / 'help <topic>' for details. \n"
+    )
+    prompt = sf.success("(netspion Active-IG): ")
 
-Select operation: """
+    def __init__(self):
+        super().__init__(auto_load_commands=False)
+        self.resultsPath = "/tmp/netspion/Active-IG/"
+        self.network = ""
+        self.domain = ""
+        self.pkt_fragment = "No"
+
+        self.add_settable(cmd2.Settable("network", str, "Target Network", self))
+        self.add_settable(cmd2.Settable("domain", str, "Target Domain", self))
+        self.add_settable(
+            cmd2.Settable(
+                "pkt_fragment",
+                str,
+                "Packet Fragment mode for NMAP (default: no)",
+                self,
+                choices=(["Yes", "No"]),
             )
         )
-        print("\n")
-        match operation:
-            case 1:
-                network = str(input("Network/IP: "))
-                subprocess.run(
+
+        self.register_command_set(UtilsCommandSet())
+        self.default_category = "cmd2 Built-in Commands"
+        self.remove_settable("debug")
+        self.remove_settable("allow_style")
+        self.remove_settable("always_show_hint")
+        self.remove_settable("echo")
+        self.remove_settable("feedback_to_output")
+        self.remove_settable("max_completion_items")
+        self.remove_settable("quiet")
+        self.remove_settable("timing")
+
+        self.poutput(
+            sf.info("RUNNING ON: ")
+            + sf.success(PLATFORM_SYSTEM + platform.release() + platform.version())
+        )
+        self.poutput(
+            sf.info("ALL RESULTS WILL BE STORED IN: ") + sf.success(self.resultsPath)
+        )
+        os.makedirs(self.resultsPath, exist_ok=True)
+        self.do_help("-v")
+
+    def do_host_discover(self, arg):
+        "Nmap Host Discovery"
+        if check_vars([{"name": "network", "value": self.network}]):
+            if self.pkt_fragment == "No":
+                rt.runBackground(
                     [
                         "nmap",
                         "-v",
                         "--reason",
                         "-sn",
                         "-PS",
-                        network,
+                        self.network,
                         "-oA",
-                        resultsPath + "hostDiscovery",
+                        self.resultsPath + "hostDiscovery_" + self.network,
                         "--webxml",
-                    ]
+                    ],
+                    None,
                 )
-
-            case 2:
-                network = str(input("Network/IP: "))
-                subprocess.run(
-                    [
-                        "nmap",
-                        "-v",
-                        "--reason",
-                        "-sS",
-                        "-p-",
-                        network,
-                        "-oA",
-                        resultsPath + "portScanSYN",
-                        "--webxml",
-                    ]
-                )
-
-            case 3:
-                network = str(input("Network/IP: "))
-                subprocess.run(
-                    [
-                        "nmap",
-                        "-v",
-                        "--reason",
-                        "-sT",
-                        "-p-",
-                        network,
-                        "-oA",
-                        resultsPath + "portScanTCP",
-                        "--webxml",
-                    ]
-                )
-
-            case 4:
-                network = str(input("Network/IP: "))
-                subprocess.run(
-                    [
-                        "nmap",
-                        "-v",
-                        "--reason",
-                        "-sU",
-                        "-p-",
-                        network,
-                        "-oA",
-                        resultsPath + "portScanUDP",
-                        "--webxml",
-                    ]
-                )
-
-            case 5:
-                network = str(input("Network/IP: "))
-                subprocess.run(
-                    [
-                        "nmap",
-                        "-v",
-                        "--reason",
-                        "-A",
-                        "-p-",
-                        network,
-                        "-oA",
-                        resultsPath + "osAndServicesScan",
-                        "--webxml",
-                    ]
-                )
-
-            case 6:
-                subprocess.run(["ls /usr/share/nmap/scripts/smb*"], shell=True)
-                network = str(input("\nNetwork/IP: "))
-                script = str(input("Script name: "))
-                subprocess.run(
-                    [
-                        "nmap",
-                        "-v",
-                        "--reason",
-                        "-sS",
-                        "--script=" + script,
-                        network,
-                        "-oA",
-                        resultsPath + "smbEnum",
-                        "--webxml",
-                    ]
-                )
-
-            case 7:
-                subprocess.run(["ls /usr/share/nmap/scripts/snmp*"], shell=True)
-                network = str(input("\nNetwork/IP: "))
-                script = str(input("Script name: "))
-                subprocess.run(
-                    [
-                        "nmap",
-                        "-v",
-                        "--reason",
-                        "-sS",
-                        "--script=" + script,
-                        network,
-                        "-oA",
-                        resultsPath + "snmpEnum",
-                        "--webxml",
-                    ]
-                )
-
-            case 8:
-                domain = str(input("Domain: "))
-                nslookupResult = subprocess.run(
-                    ["nslookup", "-q=any", domain], capture_output=True, text=True
-                )
-                print(nslookupResult.stdout)
-                f = open(resultsPath + domain + "_nslookup", "w")
-                print(nslookupResult.stdout, file=f)
-                f.close()
-                digResult = subprocess.run(
-                    ["dig", domain, "ANY", "+trace"], capture_output=True, text=True
-                )
-                print(digResult.stdout)
-                f = open(resultsPath + domain + "_dig", "w")
-                print(digResult.stdout, file=f)
-                f.close()
-
-            case 9:
+            else:
                 mtu = str(input("MTU: "))
                 if (mtu % 8) != 0:
                     print("Invalid MTU")
-                    break
-                network = str(input("Network/IP: "))
-                subprocess.run(
+                    return
+                rt.runBackground(
                     [
                         "nmap",
                         "-v",
@@ -178,24 +88,103 @@ Select operation: """
                         "-p-",
                         "--mtu",
                         mtu,
-                        network,
+                        self.network,
                         "-oA",
-                        resultsPath + "portScanSYN",
+                        self.resultsPath + "mtu_hostDiscovery_" + self.network,
                         "--webxml",
-                    ]
+                    ],
+                    None,
                 )
 
-            case 98:
-                print("THIS SECTION DOESN'T MAKE ANY LOG BY DEFAULT")
-                print("YOU NEED TO MAKE YOUR OWN LOG\n")
-                command = str(input("Command: "))
-                subprocess.run([command], shell=True)
+    def do_syn_port_scan(self, arg):
+        "Nmap Port Scan (SYN)"
+        if check_vars([{"name": "network", "value": self.network}]):
+            rt.runBackground(
+                [
+                    "nmap",
+                    "-v",
+                    "--reason",
+                    "-sS",
+                    "-p-",
+                    self.network,
+                    "-oA",
+                    self.resultsPath + "portScanSYN_" + self.network,
+                    "--webxml",
+                ],
+                None,
+            )
 
-            case 99:
-                break
+    def do_tcp_port_scan(self, arg):
+        "Nmap Port Scan (TCP)"
+        if check_vars([{"name": "network", "value": self.network}]):
+            rt.runBackground(
+                [
+                    "nmap",
+                    "-v",
+                    "--reason",
+                    "-sT",
+                    "-p-",
+                    self.network,
+                    "-oA",
+                    self.resultsPath + "portScanTCP_" + self.network,
+                    "--webxml",
+                ],
+                None,
+            )
 
-            case _:
-                print("No option available")
+    def do_udp_port_scan(self, arg):
+        "Nmap Port Scan (UDP)"
+        if check_vars([{"name": "network", "value": self.network}]):
+            rt.runBackground(
+                [
+                    "nmap",
+                    "-v",
+                    "--reason",
+                    "-sU",
+                    "-p-",
+                    self.network,
+                    "-oA",
+                    self.resultsPath + "portScanUDP_" + self.network,
+                    "--webxml",
+                ],
+                None,
+            )
 
-        input("\nPress enter to continue ")
-        subprocess.run(["clear"], shell=True)
+    def do_aggressive_scan(self, arg):
+        "Nmap Port Scan (Aggressive / All)"
+        if check_vars([{"name": "network", "value": self.network}]):
+            rt.runBackground(
+                [
+                    "nmap",
+                    "-v",
+                    "--reason",
+                    "-A",
+                    "-p-",
+                    self.network,
+                    "-oA",
+                    self.resultsPath + "portScanAll_" + self.network,
+                    "--webxml",
+                ],
+                None,
+            )
+
+    def do_nslookup_dig(self, arg):
+        "Nslookup & DIG"
+        if check_vars([{"name": "domain", "value": self.domain}]):
+            asyncio.run(
+                rt.runBackground(
+                    ["nslookup", f"-q=any {self.domain}"],
+                    self.resultsPath + self.domain + "/",
+                )
+            )
+            asyncio.run(
+                rt.runBackground(
+                    ["dig", f"{self.domain} ANY +trace"],
+                    self.resultsPath + self.domain + "/",
+                )
+            )
+
+
+def main():
+    ActiveIGShell().do_clear(1)
+    ActiveIGShell().cmdloop()
