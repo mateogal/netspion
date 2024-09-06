@@ -1,9 +1,9 @@
 import cmd2, subprocess, platform, os
 import utils.run_task as rt
-from cmd2 import CommandSet, with_default_category
+from cmd2 import with_default_category
 import utils.string_format as sf
 from utils.check_var import check_vars
-from datetime import datetime
+from utils.utils_shell import UtilsCommandSet
 
 PLATFORM_SYSTEM = platform.system()
 
@@ -11,7 +11,7 @@ PLATFORM_SYSTEM = platform.system()
 @with_default_category("Main commands")
 class PasswordCrackingShell(cmd2.Cmd):
     intro = sf.text(
-        "netspion Tools Password Cracking Sub menu. Type help or ? to list commands and help/? COMMAND to show COMMAND help. \n"
+        "Netspion Tools Password Cracking Sub menu. Type help or ? to list commands and help/? COMMAND to show COMMAND help. \n"
     )
     prompt = sf.success("(netspion Pwd-Crack): ")
 
@@ -42,6 +42,7 @@ class PasswordCrackingShell(cmd2.Cmd):
                 completer=cmd2.Cmd.path_complete,
             )
         )
+        self.register_command_set(UtilsCommandSet())
         self.default_category = "cmd2 Built-in Commands"
         self.remove_settable("debug")
         self.remove_settable("allow_style")
@@ -56,16 +57,10 @@ class PasswordCrackingShell(cmd2.Cmd):
             + sf.success(PLATFORM_SYSTEM + platform.release() + platform.version())
         )
         self.poutput(
-            sf.info("ALL RESULTS WILL BE STORED IN: ")
-            + sf.success(self.resultsPath)
-            + "\n"
+            sf.info("ALL RESULTS WILL BE STORED IN: ") + sf.success(self.resultsPath)
         )
         os.makedirs(self.resultsPath, exist_ok=True)
         self.do_help("-v")
-
-    def do_clear(self, arg):
-        "Clear screen"
-        subprocess.run(["clear"], shell=True)
 
     def do_hashcat_bf(self, arg):
         "Hashcat brute force password crack"

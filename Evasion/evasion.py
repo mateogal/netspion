@@ -1,8 +1,9 @@
 import cmd2, subprocess, platform, os
 import utils.run_task as rt
-from cmd2 import CommandSet, with_default_category
+from cmd2 import with_default_category
 import utils.string_format as sf
 from utils.check_var import check_vars
+from utils.utils_shell import UtilsCommandSet
 
 PLATFORM_SYSTEM = platform.system()
 
@@ -10,7 +11,7 @@ PLATFORM_SYSTEM = platform.system()
 @with_default_category("Main commands")
 class EvasionShell(cmd2.Cmd):
     intro = sf.text(
-        "netspion Tools Evasion Sub menu. Type help or ? to list commands and help/? COMMAND to show COMMAND help. \n"
+        "Netspion Tools Evasion Sub menu. Type help or ? to list commands and help/? COMMAND to show COMMAND help. \n"
     )
     prompt = sf.success("(netspion Evasion): ")
 
@@ -31,6 +32,7 @@ class EvasionShell(cmd2.Cmd):
             )
         )
         self.add_settable(cmd2.Settable("domain", str, "Domain", self))
+        self.register_command_set(UtilsCommandSet())
         self.default_category = "cmd2 Built-in Commands"
         self.remove_settable("debug")
         self.remove_settable("allow_style")
@@ -45,16 +47,10 @@ class EvasionShell(cmd2.Cmd):
             + sf.success(PLATFORM_SYSTEM + platform.release() + platform.version())
         )
         self.poutput(
-            sf.info("ALL RESULTS WILL BE STORED IN: ")
-            + sf.success(self.resultsPath)
-            + "\n"
+            sf.info("ALL RESULTS WILL BE STORED IN: ") + sf.success(self.resultsPath)
         )
         os.makedirs(self.resultsPath, exist_ok=True)
         self.do_help("-v")
-
-    def do_clear(self, arg):
-        "Clear screen"
-        subprocess.run(["clear"], shell=True)
 
     def do_lb_detector(self, arg):
         "Load Balancing Detector (AGGRESSIVE)"
@@ -70,7 +66,7 @@ class EvasionShell(cmd2.Cmd):
 
     def do_csharp_bypass(self, arg):  # Open C# Antivirus Bypass script file
         "C# script to bypass Antivirus"
-        self.do_edit("./EthicalHacking/Evasion/Windows_Exec_ByPass.cs")
+        self.do_edit("./Evasion/Windows_Exec_ByPass.cs")
 
 
 def main():

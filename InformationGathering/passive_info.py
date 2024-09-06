@@ -1,94 +1,108 @@
-import subprocess
-import webbrowser
-import os
+import cmd2, platform, os, webbrowser
+import utils.run_task as rt
+from cmd2 import with_default_category
+import utils.string_format as sf
+from utils.check_var import check_vars
+from utils.utils_shell import UtilsCommandSet
+
+PLATFORM_SYSTEM = platform.system()
 
 
-def main(resultsPath):
-    resultsPath = resultsPath + "PassiveInfo/"
-    os.makedirs(resultsPath, exist_ok=True)
-    while True:
-        print("Information Gathering / Passive Information\n")
-        print("ALL RESULTS WILL BE STORED IN " + resultsPath)
-        operation = int(
-            input(
-                """
-[1] Open Shodan
-[2] Open Google Hacking Database
-[3] Open Censys
-[4] Open Archive.org
-[5] Open DNSDumpster
-[6] Open InternalAllTheThings
-[7] Whois
-[8] TheHarvester
-[98] Custom command (SHELL)
-[99] Exit
+@with_default_category("Main commands")
+class PassiveIGShell(cmd2.Cmd):
+    intro = sf.text(
+        "Netspion Passive Info-Gath Sub menu. Use 'help / help -v' for verbose / 'help <topic>' for details. \n"
+    )
+    prompt = sf.success("(netspion Passive-IG): ")
 
-Select operation: """
+    def __init__(self):
+        super().__init__(auto_load_commands=False)
+        self.resultsPath = "/tmp/netspion/Passive-IG/"
+        self.domain = ""
+        self.limit = "500"
+
+        self.add_settable(cmd2.Settable("domain", str, "Target Domain", self))
+        self.add_settable(
+            cmd2.Settable(
+                "limit", str, "Limit theHarvester search results (default: 500)", self
             )
         )
-        print("\n")
-        match operation:
-            case 1:
-                webbrowser.open("www.shodan.io", new=2)
 
-            case 2:
-                webbrowser.open(
-                    "https://www.exploit-db.com/google-hacking-database", new=2
-                )
+        self.register_command_set(UtilsCommandSet())
+        self.default_category = "cmd2 Built-in Commands"
+        self.remove_settable("debug")
+        self.remove_settable("allow_style")
+        self.remove_settable("always_show_hint")
+        self.remove_settable("echo")
+        self.remove_settable("feedback_to_output")
+        self.remove_settable("max_completion_items")
+        self.remove_settable("quiet")
+        self.remove_settable("timing")
 
-            case 3:
-                webbrowser.open("search.censys.io", new=2)
+        self.poutput(
+            sf.info("RUNNING ON: ")
+            + sf.success(PLATFORM_SYSTEM + platform.release() + platform.version())
+        )
+        self.poutput(
+            sf.info("ALL RESULTS WILL BE STORED IN: ") + sf.success(self.resultsPath)
+        )
+        os.makedirs(self.resultsPath, exist_ok=True)
+        self.do_help("-v")
 
-            case 4:
-                webbrowser.open("archive.org", new=2)
+    def do_shodan(self, arg):
+        "Open Shodan Website (GUI needed)"
+        webbrowser.open("www.shodan.io", new=2)
 
-            case 5:
-                webbrowser.open("https://dnsdumpster.com/", new=2)
+    def do_google_db(self, arg):
+        "Open Google Hacking Database Website (GUI needed)"
+        webbrowser.open("https://www.exploit-db.com/google-hacking-database", new=2)
 
-            case 6:
-                webbrowser.open(
-                    "https://swisskyrepo.github.io/InternalAllTheThings/", new=2
-                )
+    def do_censys(self, arg):
+        "Open Censys Website (GUI needed)"
+        webbrowser.open("search.censys.io", new=2)
 
-            case 7:
-                domain = str(input("Domain: "))
-                whoisResult = subprocess.run(
-                    ["whois", domain], capture_output=True, text=True
-                )
-                print(whoisResult.stdout)
-                f = open(resultsPath + domain + "_whois", "w")
-                print(whoisResult.stdout, file=f)
-                f.close()
+    def do_archiveorg(self, arg):
+        "Open Archive.org Website (GUI needed)"
+        webbrowser.open("archive.org", new=2)
 
-            case 8:
-                domain = str(input("Domain: "))
-                limit = str(input("Limit: "))
-                file = str(input("File output name: "))
-                subprocess.run(
-                    [
-                        "theHarvester",
-                        "-d",
-                        domain,
-                        "-l",
-                        limit,
-                        "-f",
-                        resultsPath + file,
-                        "-b",
-                        "all",
-                    ]
-                )
+    def do_dnsdumpster(self, arg):
+        "Open DNSDumpster Website (GUI needed)"
+        webbrowser.open("https://dnsdumpster.com/", new=2)
 
-            case 98:
-                print("THIS SECTION DOESN'T MAKE ANY LOG BY DEFAULT")
-                print("YOU NEED TO MAKE YOUR OWN LOG")
-                command = str(input("Command: "))
-                subprocess.run([command], shell=True)
+    def do_internalallthings(self, arg):
+        "Open InternalAllTheThings Website (GUI needed)"
+        webbrowser.open("https://swisskyrepo.github.io/InternalAllTheThings/", new=2)
 
-            case 99:
-                break
+    def do_whois(self, arg):
+        "WHOIS"
+        if check_vars([{"name": "domain", "value": self.domain}]):
+            rt.runBackground(
+                ["whois", self.domain], self.resultsPath + self.domain + "/"
+            )
 
-            case _:
-                print("No option available")
+    def do_theharvester(self, arg):
+        "TheHarvester OSINT"
+        if check_vars(
+            [
+                {"name": "domain", "value": self.domain},
+                {"name": "limit", "value": self.limit},
+            ]
+        ):
+            rt.runBackground(
+                [
+                    "theHarvester",
+                    "-d",
+                    self.domain,
+                    "-l",
+                    self.limit,
+                    "-f",
+                    self.resultsPath + self.domain + "/",
+                    "-b",
+                    "all",
+                ]
+            )
 
-        input("\nPress enter to continue ")
-        subprocess.run(["clear"], shell=True)
+
+def main():
+    PassiveIGShell().do_clear(1)
+    PassiveIGShell().cmdloop()

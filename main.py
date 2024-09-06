@@ -7,6 +7,7 @@ import WebHacking.web as wh_cs
 import Passwords.password_crack as pc
 import InformationGathering.active_info as aig
 import utils.string_format as sf
+import InformationGathering.passive_info as pig
 from cmd2 import CommandSet, with_default_category
 
 import platform
@@ -50,16 +51,11 @@ class SubMenuCommandSet(CommandSet):
 
     def do_active_info(self, arg):
         "Information Gathering Active hacking tools sub menu"
-
         aig.main()
 
     def do_passive_info(self, arg):
         "Information Gathering Passive hacking tools sub menu"
-
-        class IGPassive(cmd2.Cmd):
-            prompt = "(netspion IG-Passive): "
-
-        IGPassive().cmdloop()
+        pig.main()
 
 
 @with_default_category("Main commands")
@@ -112,7 +108,6 @@ class NetspionShell(cmd2.Cmd):
 
     def do_netcat(self, arg):
         "Netcat TCP connection listener: netcat PORT ADDR"
-        # rt.newTerminal(["nc", "-l", "-p", self.port, "-s", self.addr, "-v"])
         rt.runBackground(["nc", "-l", "-p", self.port, "-s", self.addr, "-v"], None)
 
     def do_httpsrv(self, arg):

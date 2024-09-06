@@ -125,3 +125,15 @@ def newTerminal(command):
         f"{bash_exec.strip()};read -rsp $'\nPress any key to exit...\n' -n 1 key",
     ]
     subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+
+# Receive an array of parameters for subprocess
+def normalCapture(command):
+    print("\n")
+    p = subprocess.run(
+        command,
+        capture_output=True,
+        text=True,
+    )
+
+    return p

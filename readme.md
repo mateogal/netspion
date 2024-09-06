@@ -3,7 +3,7 @@
 # Netspion
 > [!NOTE]
 > Netspion is a tool with useful pre-defined techniques for ethical hacking.  
-> You can execute directly to shell inside of Netspion if you want to run some custom commands.
+> You can execute directly to shell inside of Netspion if you want to run custom commands.
 
 > [!IMPORTANT]
 > **Python 3.10+ required**  

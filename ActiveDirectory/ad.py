@@ -1,8 +1,9 @@
 import cmd2, platform, subprocess, os
-from cmd2 import CommandSet, with_default_category
+from cmd2 import with_default_category
 import utils.string_format as sf
 import utils.run_task as rt
 from utils.check_var import check_vars
+from utils.utils_shell import UtilsCommandSet
 
 PLATFORM_SYSTEM = platform.system()
 
@@ -10,7 +11,7 @@ PLATFORM_SYSTEM = platform.system()
 @with_default_category("Main commands")
 class ADHacking(cmd2.Cmd):
     intro = sf.text(
-        "netspion Tools Active Directory Sub menu. Type help or ? to list commands and help/? COMMAND to show COMMAND help. \n"
+        "Netspion Tools Active Directory Sub menu. Type help or ? to list commands and help/? COMMAND to show COMMAND help. \n"
     )
     prompt = sf.success("(netspion AD-Hacking): ")
 
@@ -53,6 +54,7 @@ class ADHacking(cmd2.Cmd):
         self.add_settable(
             cmd2.Settable("hash", str, "Target Credential Hash string", self)
         )
+        self.register_command_set(UtilsCommandSet())
         self.default_category = "cmd2 Built-in Commands"
         self.remove_settable("debug")
         self.remove_settable("allow_style")
@@ -67,16 +69,10 @@ class ADHacking(cmd2.Cmd):
             + sf.success(PLATFORM_SYSTEM + platform.release() + platform.version())
         )
         self.poutput(
-            sf.info("ALL RESULTS WILL BE STORED IN: ")
-            + sf.success(self.resultsPath)
-            + "\n"
+            sf.info("ALL RESULTS WILL BE STORED IN: ") + sf.success(self.resultsPath)
         )
         os.makedirs(self.resultsPath, exist_ok=True)
         self.do_help("-v")
-
-    def do_clear(self, arg):
-        "Clear screen"
-        subprocess.run(["clear"], shell=True)
 
     def do_secrets_dump_hashfile(self, arg):
         "Impacket secrets dump from hashfile"
