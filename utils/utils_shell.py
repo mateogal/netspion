@@ -12,11 +12,11 @@ class UtilsCommandSet(CommandSet):
         "Clear screen"
         subprocess.run(["clear"], shell=True)
 
-    def do_show_processes(self, arg):
+    def do_running_processes(self, arg):
         "Show current running processes"
         rt.showRunningProcs()
 
-    def do_show_process_data(self, arg):
+    def do_process_data(self, arg):
         "Show specific process output (Log Location: /tmp/netspion/processes/)"
         rt.showProcessData(int(arg))
 
