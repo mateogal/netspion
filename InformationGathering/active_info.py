@@ -1,10 +1,9 @@
-import cmd2, subprocess, platform, os
+import cmd2, platform, os
 import utils.run_task as rt
-from cmd2 import CommandSet, with_default_category
+from cmd2 import with_default_category
 import utils.string_format as sf
 from utils.check_var import check_vars
 from utils.utils_shell import UtilsCommandSet
-import asyncio
 
 PLATFORM_SYSTEM = platform.system()
 
@@ -171,17 +170,13 @@ class ActiveIGShell(cmd2.Cmd):
     def do_nslookup_dig(self, arg):
         "Nslookup & DIG"
         if check_vars([{"name": "domain", "value": self.domain}]):
-            asyncio.run(
-                rt.runBackground(
-                    ["nslookup", f"-q=any {self.domain}"],
-                    self.resultsPath + self.domain + "/",
-                )
+            rt.runBackground(
+                ["nslookup", "-q=any", self.domain],
+                self.resultsPath + self.domain + "/",
             )
-            asyncio.run(
-                rt.runBackground(
-                    ["dig", f"{self.domain} ANY +trace"],
-                    self.resultsPath + self.domain + "/",
-                )
+            rt.runBackground(
+                ["dig", self.domain, "ANY", "+trace"],
+                self.resultsPath + self.domain + "/",
             )
 
 

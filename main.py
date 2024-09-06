@@ -7,7 +7,6 @@ import WebHacking.web as wh_cs
 import Passwords.password_crack as pc
 import InformationGathering.active_info as aig
 import utils.string_format as sf
-import utils.utils_shell
 from cmd2 import CommandSet, with_default_category
 
 import platform
@@ -90,7 +89,7 @@ class NetspionShell(cmd2.Cmd):
         self.remove_settable("quiet")
         self.remove_settable("timing")
         self.poutput(
-            sf.warning(
+            sf.title(
                 """
   _   _      _             _             
  | \ | |    | |           (_)            

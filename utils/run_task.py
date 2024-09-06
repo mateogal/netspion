@@ -1,99 +1,86 @@
-import subprocess
-import sys
+import subprocess, sys, time, os
 from tqdm import tqdm
 from datetime import datetime
-import os
-import asyncio
-from shlex import quote
+from . import string_format as sf
 
-PROCS = []
+PROCS = {}
 
-
-# Array of params
-# def runBackground(command, savePath):
-#     if savePath is not None:
-#         os.makedirs(savePath, exist_ok=True)
-#         file_path = f"{savePath}{command[0]}_{datetime.now()}"
-#     else:
-#         os.makedirs("/tmp/netspion/processes/", exist_ok=True)
-#         file_path = f"/tmp/netspion/processes/{command[0]}_{datetime.now()}"
-#     f_out = open(f"{file_path}.out", "w")
-#     f_err = open(f"{file_path}.err", "w")
-#     p = subprocess.Popen(
-#         command,
-#         stdout=f_out,
-#         stderr=f_err,
-#         stdin=subprocess.PIPE,
-#         text=True,
-#     )
-#     PROCS.insert(
-#         len(PROCS),
-#         {"id": len(PROCS), "command": p.args, "proc": p, "out": f_out, "err": f_err},
-#     )
+# Problem: subprocess.Popen causes interference with input() doesn't show user text (stdout, stderr, stdin problem)
+# Solution: start_new_session=True
+# TODO: Find better way to manage this without using start_new_session
+# Tried using Asyncio but had the same problem
 
 
-async def handle_process(p, file_out, file_err):
-    # Esperar a que el proceso termine
-    await p.wait()
-
-    # Obtener el returncode
-    print(f"El proceso {p.pid} terminó con el código: {p.returncode}")
-
-    # Cerrar los archivos
-    file_out.close()
-    file_err.close()
-
-
-async def runBackground(command, savePath):
-    os.makedirs("/tmp/netspion/processes/", exist_ok=True)
-    file_path = f"/tmp/netspion/processes/{command[0]}_{datetime.now():%Y%m%d_%H%M%S}"
+def runBackground(command, savePath):
+    if savePath is not None:
+        os.makedirs(savePath, exist_ok=True)
+        file_path = f"{savePath}{command[0]}_{datetime.now()}"
+    else:
+        os.makedirs("/tmp/netspion/processes/", exist_ok=True)
+        file_path = f"/tmp/netspion/processes/{command[0]}_{datetime.now()}"
     f_out = open(f"{file_path}.out", "w")
     f_err = open(f"{file_path}.err", "w")
-
-    # Crear el proceso de forma asíncrona
-    p = await asyncio.create_subprocess_exec(
-        command[0], *command[1].split(), stdout=f_out, stderr=f_err
+    p = subprocess.Popen(
+        command,
+        stdout=f_out,
+        stderr=f_err,
+        stdin=subprocess.PIPE,
+        text=True,
+        start_new_session=True,
     )
-
-    # Guardar el proceso en la lista PROCS
     PROCS[p.pid] = {
         "id": p.pid,
-        "command": str(command),
+        "command": p.args,
         "proc": p,
         "out": f_out,
         "err": f_err,
     }
 
-    # Crear una tarea asíncrona para manejar el proceso y no bloquear runBackground
-    asyncio.create_task(handle_process(p, f_out, f_err))
+    print(f"PID: {p.pid} || Command: {' '.join(command)} || {sf.info('STARTED')}")
 
 
 def showRunningProcs():
-    for value in PROCS:
-        print((value["proc"]).returncode)
-        if (value["proc"]).returncode == None:
-            print(f"PID: {value['id']} {str(value['command'])} RUNNING")
-        else:
-            print(f"PID: {value['id']} {str(value['command'])} FINISHED")
-            value["out"].close()
-            value["err"].close()
+    for pid, info in PROCS.items():
+        proc = info["proc"]
+        status = sf.success("RUNNING") if proc.poll() is None else sf.fail("FINISHED")
+        print(
+            f"PID: {info['id']} || Command: {' '.join(info['command'])} || Status: {status}"
+        )
+        if status == "FINISHED":
+            info["out"].close()
+            info["err"].close()
 
 
 def showProcessData(id):
-    if (PROCS[id]["proc"]).returncode == None:
+    proc_info = PROCS.get(id)
+    if not proc_info:
+        print(sf.fail(f"Process with PID: {id} not found."))
+        return
+
+    proc = proc_info["proc"]
+    out_file = proc_info["out"]
+    err_file = proc_info["err"]
+    if (proc.poll()) == None:
         while True:
             try:
-                print((PROCS[id]["out"]).read())
+                out_file.flush()
+                with open((out_file).name, "r") as f:
+                    x = f.read()
+                time.sleep(1)
             except KeyboardInterrupt:
                 break
     else:
-        f = open((PROCS[id]["out"]).name, "r")
-        print(f.read())
-        f.close()
+        try:
+            out_file.close()
+            err_file.close()
+        finally:
+            f = open((out_file).name, "r")
+            print(f.read())
+            f.close()
 
 
 def endProcess(id):
-    PROCS[id]["proc"].terminate()
+    PROCS.get(id)["proc"].terminate()
 
 
 # Receive an plain string for subprocess
