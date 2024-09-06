@@ -24,8 +24,8 @@ def runBackground(command, savePath):
         command,
         stdout=f_out,
         stderr=f_err,
-        stdin=subprocess.PIPE,
         text=True,
+        stdin=subprocess.PIPE,
         start_new_session=True,
     )
     PROCS[p.pid] = {
@@ -61,14 +61,17 @@ def showProcessData(id):
     out_file = proc_info["out"]
     err_file = proc_info["err"]
     if (proc.poll()) == None:
-        while True:
-            try:
-                out_file.flush()
-                with open((out_file).name, "r") as f:
-                    x = f.read()
-                time.sleep(1)
-            except KeyboardInterrupt:
-                break
+        with open(out_file.name, "r") as f:
+            while True:
+                try:
+                    output = f.readline()
+                    if output:
+                        print(output, end="")
+                    else:
+                        time.sleep(1)
+
+                except KeyboardInterrupt:
+                    break
     else:
         try:
             out_file.close()
