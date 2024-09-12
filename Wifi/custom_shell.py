@@ -1,4 +1,4 @@
-import cmd2, platform, os
+import cmd2, platform, os, time
 import utils.run_task as rt
 from cmd2 import with_default_category
 import utils.string_format as sf
@@ -273,6 +273,55 @@ class WifiShell(cmd2.Cmd):
             )
             # Monitor password hit
             run_task.newTerminal(["tail", "-f", resultsPath + "captive_portal/hit.txt"])
+
+    def do_monitor_mode(self, arg):
+        "Set adapter to monitor mode"
+        if check_vars([{"name": "adapter", "value": self.adapter}]):
+            rt.runBackground(["airmon-ng", "start", self.adapter])
+            # self.adapter = self.adapter + "mon"
+
+    def do_show_wifis(self, arg):
+        "Show available wifis"
+        if check_vars([{"name": "adapter", "value": self.adapter}]):
+            rt.runBackground(
+                [
+                    "airodump-ng",
+                    "--band",
+                    "abg",
+                    self.adapter,
+                    "-w",
+                    self.resultsPath + "availableWifis",
+                ]
+            )
+
+    def do_wifi_monitor(self, arg):
+        "Monitor selected Wifi"
+        if check_vars(
+            [
+                {
+                    "name": "channel",
+                    "value": self.channel,
+                    "name": "wifi_bssid",
+                    "value": self.wifi_bssid,
+                }
+            ]
+        ):
+            output_file = self.resultsPath + self.wifi_bssid + time.time()
+            rt.runBackground(
+                [
+                    "airodump-ng",
+                    "--band",
+                    "abg",
+                    "-c",
+                    self.channel,
+                    "--bssid",
+                    self.wifi_bssid,
+                    "-w",
+                    output_file,
+                    self.adapter,
+                ]
+            )
+            self.capfile = output_file + ".cap"
 
 
 def main():
