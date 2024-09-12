@@ -1,7 +1,6 @@
-import subprocess
-import platform
-import time
-import importlib
+import subprocess, platform, time, importlib, sys, os
+
+os.chdir(sys._MEIPASS)
 
 with open("requirements.txt") as file:
     for module in file:
@@ -12,7 +11,7 @@ with open("requirements.txt") as file:
             print(
                 "Missing python modules. Please install them using: pip install -r requirements.txt"
             )
-            exit()
+            sys.exit()
 
 from utils import run_task
 from utils import string_format
@@ -40,7 +39,7 @@ DEPENDENCIES_LIST = [
     "ffuf",
     "commix",
     "wafw00f",
-    "hashcat"
+    "hashcat",
 ]
 
 
@@ -133,4 +132,4 @@ def checkRoot():
 def main():
     checkRoot()
     PKG_INSTALLER, PKG_CHECK = checkOS()
-    checkDependencies(PKG_INSTALLER, PKG_CHECK)    
+    checkDependencies(PKG_INSTALLER, PKG_CHECK)

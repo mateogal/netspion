@@ -2,6 +2,7 @@ import subprocess
 import os
 from utils import string_format, run_task, check_var
 
+
 def reloadConf(resultsPath):
     file = open(resultsPath + "saved.conf", "r")
     dict = {}
