@@ -3,7 +3,7 @@
 # Netspion
 > [!NOTE]
 > Netspion is a tool with useful pre-defined techniques for ethical hacking.  
-> You can execute directly to shell inside of Netspion if you want to run custom commands.
+> You can run custom commands directly in the shell inside Netspion.
 
 > [!IMPORTANT]
 > **Python 3.10+ required**  
@@ -11,7 +11,7 @@
 ``` pip install -r requirements.txt ```  
 
 > [!IMPORTANT]
-> Tools used and required (All credits to respective owners):
+> Tools used and required (aAll credits to respective owners):
 > - [Metasploit](https://www.metasploit.com/)
 > - [SQLMap](https://sqlmap.org/)
 > - [Nmap](https://nmap.org)
@@ -32,7 +32,7 @@
 > - [LoadBalancing detector](https://github.com/craig/ge.mine.nu/blob/master/lbd/lbd.sh)
 
 > [!TIP]
-> Recommended additional tools/websites (All credits to respective owners):
+> Recommended additional tools/websites (all credits to respective owners):
 > - [Maltego](https://www.maltego.com/)
 > - [Burpsuite](https://portswigger.net/burp/communitydownload)
 > - [Nessus](https://www.tenable.com/products/nessus/nessus-essentials)
