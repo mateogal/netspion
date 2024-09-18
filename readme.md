@@ -18,7 +18,7 @@
 ``` pip install -r requirements.txt ```  
 
 > [!IMPORTANT]
-> Tools used and required (aAll credits to respective owners):
+> Tools used and required (all credits to respective owners):
 > - [Metasploit](https://www.metasploit.com/)
 > - [SQLMap](https://sqlmap.org/)
 > - [Nmap](https://nmap.org)
@@ -56,41 +56,3 @@
 > - [Git Leaks](https://github.com/gitleaks/gitleaks)
 > - [The Fat Rat](https://github.com/screetsec/TheFatRat)
 > - [Local Tunnel](https://github.com/localtunnel/localtunnel)
-
-# Useful commands
-
-## Metasploit framework
-
-### Module to check possible availables exploits in opened sessions
-
-``` use post/multi/recon/local_exploit_suggester ```
-
-### Module to generate payloads with webserver
-
-``` use exploit/multi/script/web_delivery ```
-
-### Module to run an listener
-
-``` use exploit/multi/handler ```
-
-### Module to scan TCP ports
-
-``` use auxiliary/scanner/portscan/tcp ```
-
-### Module to exploit smb psexec
-
-``` use exploit/windows/smb/psexec ```
-
-### Route traffic to session
-``` route add DST_IP DST_MASK SESSION_NUMBER```
-
-## MSFVenom
-
-### Generate custom payloads
-
-``` msfvenom -p payload lhosts=XXX lport=XXXX ```
-
-## Meterpreter
-
-### Port Forwarding
-``` portfw add -l LOCAL_PORT -p REMOTE_PORT -r REMOTE_IP ```
