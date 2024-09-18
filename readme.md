@@ -1,9 +1,15 @@
 # This project is still in development
 
 # Netspion
-> [!NOTE]
-> Netspion is a tool with useful pre-defined techniques for ethical hacking.  
-> You can run custom commands directly in the shell inside Netspion.
+**Netspion** is a tool with useful pre-defined techniques for ethical hacking, it includes:  
+- Information Gathering
+- Active Directory hacking
+- Web Hacking
+- Wifi Hacking
+- Evasion techniques
+- Post exploitation
+
+You can run custom commands directly in the shell inside **Netspion**.
 
 > [!IMPORTANT]
 > **Python 3.10+ required**  
