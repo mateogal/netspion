@@ -9,7 +9,7 @@
 - Evasion techniques
 - Post exploitation
 
-[!NOTE]
+> [!NOTE]
 > You can run custom commands directly in the shell inside **Netspion**.
 
 > [!IMPORTANT]
