@@ -9,7 +9,8 @@
 - Evasion techniques
 - Post exploitation
 
-You can run custom commands directly in the shell inside **Netspion**.
+[!NOTE]
+> You can run custom commands directly in the shell inside **Netspion**.
 
 > [!IMPORTANT]
 > **Python 3.10+ required**  
