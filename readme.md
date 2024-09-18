@@ -1,6 +1,6 @@
 # This project is still in development
 
-# Netspion
+![Banner](banner.gif)  
 **Netspion** is a tool with useful pre-defined techniques for ethical hacking, it includes:  
 - Information Gathering
 - Active Directory hacking
