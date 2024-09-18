@@ -12,13 +12,17 @@ class UtilsCommandSet(CommandSet):
         "Clear screen"
         subprocess.run(["clear"], shell=True)
 
-    def do_running_processes(self, arg):
-        "Show current running processes"
+    def do_check_processes(self, arg):
+        "Show processes status"
         rt.showRunningProcs()
 
     def do_process_data(self, arg):
         "Show specific process output (Log Location: /tmp/netspion/processes/)"
         rt.showProcessData(int(arg))
+
+    def do_process_errors(self, arg):
+        "Show specific process errors (Log Location: /tmp/netspion/processes/)"
+        rt.showProcessErrors(int(arg))
 
     def do_exec_mode(self, arg):
         "Set execution mode (N: run task in new terminal) / (B: run task in background)"

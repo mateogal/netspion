@@ -7,7 +7,7 @@ def check_vars(varList):
         if var["value"] == "":
             msg += f"{var['name']}, "
     if msg != "":
-        print(sf.fail(f"{msg}variables are empty."))
+        print(sf.fail(f"{msg}variable/s are empty."))
         return 0
     else:
         return 1

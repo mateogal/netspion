@@ -78,8 +78,9 @@ class WebHacking(cmd2.Cmd):
                     self.domain,
                     "-oJ",
                     "-o",
-                    self.resultsPath + f"subfinder{self.domain}.json",
-                ]
+                    self.resultsPath + f"subfinder_{self.domain}.json",
+                ],
+                None
             )
 
     def do_find_subdomains_gb(self, arg):  # GoBuster
@@ -99,8 +100,9 @@ class WebHacking(cmd2.Cmd):
                     "-w",
                     self.wordlist,
                     "-o",
-                    self.resultsPath + f"gobuster_{self.domain}.txt",
-                ]
+                    self.resultsPath + f"gobuster_dns_{self.domain}.txt",
+                ],
+                None
             )
 
     def do_find_url_directories(self, arg):  # URL directories Finder
@@ -120,8 +122,9 @@ class WebHacking(cmd2.Cmd):
                     "-w",
                     self.wordlist,
                     "-o",
-                    self.resultsPath + f"gobuster_{self.url}.txt",
-                ]
+                    self.resultsPath + f"gobuster_url_{(self.url).split('//')[1]}.txt",
+                ],
+                None
             )
 
     def do_fuzzing_url_params(self, arg):  # URL params fuzz
@@ -142,7 +145,8 @@ class WebHacking(cmd2.Cmd):
                     "-recursion",
                     "-o",
                     self.resultsPath + f"ffuf_url_parameters{self.url}.json",
-                ]
+                ],
+                None
             )
 
     def do_fuzzing_req_file(self, arg):  # Fuzzing from request file
@@ -163,7 +167,8 @@ class WebHacking(cmd2.Cmd):
                     "-o",
                     self.resultsPath
                     + f"ffuf_request_parameters{self.request_file}.json",
-                ]
+                ],
+                None
             )
 
     def do_web_vuln_exploit(self, arg):  # Web Vulnerabilities exploit
@@ -186,7 +191,8 @@ class WebHacking(cmd2.Cmd):
                     "--cookie=" + self.cookies,
                     "--data=" + self.bodyData,
                     "--output-dir=" + self.resultsPath,
-                ]
+                ],
+                None
             )
 
 

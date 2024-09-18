@@ -4,6 +4,7 @@ import utils.run_task as rt
 import ActiveDirectory.ad as ad_cs
 import Evasion.evasion as evasion
 import WebHacking.web as wh_cs
+import Wifi.wifi as wifi
 import Passwords.password_crack as pc
 import InformationGathering.active_info as aig
 import utils.string_format as sf
@@ -38,12 +39,8 @@ class SubMenuCommandSet(CommandSet):
         evasion.main()
 
     def do_wifi_hacking(self, arg):
-        "Wifi Hacking tools sub menu"
-
-        class WifiHacking(cmd2.Cmd):
-            prompt = "(netspion Wifi-Hacking): "
-
-        WifiHacking().cmdloop()
+        "Wifi Hackings tools sub menu"
+        wifi.main()
 
     def do_ad_hacking(self, arg):
         "Active Directory hacking tools sub menu"

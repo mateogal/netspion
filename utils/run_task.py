@@ -82,6 +82,37 @@ def showProcessData(id):
             f.close()
 
 
+def showProcessErrors(id):
+    proc_info = PROCS.get(id)
+    if not proc_info:
+        print(sf.fail(f"Process with PID: {id} not found."))
+        return
+
+    proc = proc_info["proc"]
+    out_file = proc_info["out"]
+    err_file = proc_info["err"]
+    if (proc.poll()) == None:
+        with open(err_file.name, "r") as f:
+            while True:
+                try:
+                    output = f.readline()
+                    if output:
+                        print(output, end="")
+                    else:
+                        time.sleep(1)
+
+                except KeyboardInterrupt:
+                    break
+    else:
+        try:
+            out_file.close()
+            err_file.close()
+        finally:
+            f = open((err_file).name, "r")
+            print(f.read())
+            f.close()
+
+
 def endProcess(id):
     PROCS.get(id)["proc"].terminate()
 
