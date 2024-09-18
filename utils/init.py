@@ -1,6 +1,6 @@
 import subprocess, platform, time, importlib, sys, os
 
-os.chdir(sys._MEIPASS)
+#os.chdir(sys._MEIPASS)
 
 with open("requirements.txt") as file:
     for module in file:

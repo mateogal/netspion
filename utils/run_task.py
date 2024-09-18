@@ -137,3 +137,11 @@ def normalCapture(command):
     )
 
     return p
+
+
+# Receive an array of parameters for subprocess
+def normalShell(command):
+    print("\n")
+    p = subprocess.run(command, text=True, shell=True)
+
+    return p
