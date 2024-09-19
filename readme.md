@@ -1,14 +1,16 @@
 # This project is still in development
 
 ![Banner](banner.gif)  
-**Netspion** is a tool with useful pre-defined techniques for ethical hacking, it includes:  
+**Netspion** is a tool with useful pre-defined techniques for ethical hacking, it recopiles and adapt various of the most famous applications for hacking and pen-testing.
+
+Techniques included:  
 - Information Gathering
 - Active Directory hacking
 - Web Hacking
 - Wifi Hacking
 - Evasion techniques
 - Post exploitation
-
+  
 > [!NOTE]
 > You can run custom commands directly in the shell inside **Netspion**.
 
@@ -56,3 +58,4 @@
 > - [Nuclei](https://github.com/projectdiscovery/nuclei)
 > - [The Fat Rat](https://github.com/screetsec/TheFatRat)
 > - [Local Tunnel](https://github.com/localtunnel/localtunnel)
+> - [Waf-Bypass](https://waf-bypass.com/)
