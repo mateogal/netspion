@@ -35,7 +35,7 @@ class SubMenuCommandSet(CommandSet):
         pc.main()
 
     def do_evasion(self, arg):
-        "Evasion tools sub menu"
+        "Evasion & Payloads tools sub menu"
         evasion.main()
 
     def do_wifi_hacking(self, arg):

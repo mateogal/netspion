@@ -8,7 +8,7 @@ Techniques included:
 - Active Directory hacking
 - Web Hacking
 - Wifi Hacking
-- Evasion techniques
+- Evasion techniques / Payloads generator
 - Post exploitation
   
 > [!NOTE]
