@@ -21,6 +21,7 @@ class ActiveIGShell(cmd2.Cmd):
         self.network = ""
         self.domain = ""
         self.pkt_fragment = "No"
+        self.git_repo = ""
 
         self.add_settable(cmd2.Settable("network", str, "Target Network", self))
         self.add_settable(cmd2.Settable("domain", str, "Target Domain", self))
@@ -31,6 +32,15 @@ class ActiveIGShell(cmd2.Cmd):
                 "Packet Fragment mode for NMAP (default: no)",
                 self,
                 choices=(["Yes", "No"]),
+            )
+        )
+        self.add_settable(
+            cmd2.Settable(
+                "git_repo",
+                str,
+                "GIT repository location",
+                self,
+                completer=cmd2.Cmd.path_complete,
             )
         )
 
@@ -58,6 +68,7 @@ class ActiveIGShell(cmd2.Cmd):
     def do_host_discover(self, arg):
         "Nmap Host Discovery"
         if check_vars([{"name": "network", "value": self.network}]):
+            network = self.network.replace("/", "")
             if self.pkt_fragment == "No":
                 rt.runBackground(
                     [
@@ -68,7 +79,7 @@ class ActiveIGShell(cmd2.Cmd):
                         "-PS",
                         self.network,
                         "-oA",
-                        self.resultsPath + "hostDiscovery_" + self.network,
+                        self.resultsPath + "hostDiscovery_" + network,
                         "--webxml",
                     ],
                     None,
@@ -78,6 +89,7 @@ class ActiveIGShell(cmd2.Cmd):
                 if (mtu % 8) != 0:
                     print("Invalid MTU")
                     return
+                network = self.network.replace("/", "")
                 rt.runBackground(
                     [
                         "nmap",
@@ -89,7 +101,7 @@ class ActiveIGShell(cmd2.Cmd):
                         mtu,
                         self.network,
                         "-oA",
-                        self.resultsPath + "mtu_hostDiscovery_" + self.network,
+                        self.resultsPath + "mtu_hostDiscovery_" + network,
                         "--webxml",
                     ],
                     None,
@@ -98,6 +110,7 @@ class ActiveIGShell(cmd2.Cmd):
     def do_syn_port_scan(self, arg):
         "Nmap Port Scan (SYN)"
         if check_vars([{"name": "network", "value": self.network}]):
+            network = self.network.replace("/", "")
             rt.runBackground(
                 [
                     "nmap",
@@ -107,7 +120,7 @@ class ActiveIGShell(cmd2.Cmd):
                     "-p-",
                     self.network,
                     "-oA",
-                    self.resultsPath + "portScanSYN_" + self.network,
+                    self.resultsPath + "portScanSYN_" + network,
                     "--webxml",
                 ],
                 None,
@@ -116,6 +129,7 @@ class ActiveIGShell(cmd2.Cmd):
     def do_tcp_port_scan(self, arg):
         "Nmap Port Scan (TCP)"
         if check_vars([{"name": "network", "value": self.network}]):
+            network = self.network.replace("/", "")
             rt.runBackground(
                 [
                     "nmap",
@@ -125,7 +139,7 @@ class ActiveIGShell(cmd2.Cmd):
                     "-p-",
                     self.network,
                     "-oA",
-                    self.resultsPath + "portScanTCP_" + self.network,
+                    self.resultsPath + "portScanTCP_" + network,
                     "--webxml",
                 ],
                 None,
@@ -134,6 +148,7 @@ class ActiveIGShell(cmd2.Cmd):
     def do_udp_port_scan(self, arg):
         "Nmap Port Scan (UDP)"
         if check_vars([{"name": "network", "value": self.network}]):
+            network = self.network.replace("/", "")
             rt.runBackground(
                 [
                     "nmap",
@@ -143,7 +158,7 @@ class ActiveIGShell(cmd2.Cmd):
                     "-p-",
                     self.network,
                     "-oA",
-                    self.resultsPath + "portScanUDP_" + self.network,
+                    self.resultsPath + "portScanUDP_" + network,
                     "--webxml",
                 ],
                 None,
@@ -152,6 +167,7 @@ class ActiveIGShell(cmd2.Cmd):
     def do_aggressive_scan(self, arg):
         "Nmap Port Scan (Aggressive / All)"
         if check_vars([{"name": "network", "value": self.network}]):
+            network = self.network.replace("/", "")
             rt.runBackground(
                 [
                     "nmap",
@@ -161,7 +177,7 @@ class ActiveIGShell(cmd2.Cmd):
                     "-p-",
                     self.network,
                     "-oA",
-                    self.resultsPath + "portScanAll_" + self.network,
+                    self.resultsPath + "portScanAll_" + network,
                     "--webxml",
                 ],
                 None,
@@ -177,6 +193,23 @@ class ActiveIGShell(cmd2.Cmd):
             rt.runBackground(
                 ["dig", self.domain, "ANY", "+trace"],
                 self.resultsPath + self.domain + "/",
+            )
+
+    def do_gitleaks(self, arg):
+        "Search leaks in git repository"
+        if check_vars([{"name": "git_repo", "value": self.git_repo}]):
+            repo = self.git_repo.replace("/", "")
+            rt.runBackground(
+                [
+                    "gitleaks",
+                    "detect",
+                    "-v",
+                    "-s",
+                    self.git_repo,
+                    "-r",
+                    f"{self.resultsPath}gitleaks_{repo}.json",
+                ],
+                None,
             )
 
 

@@ -40,6 +40,7 @@ DEPENDENCIES_LIST = [
     "commix",
     "wafw00f",
     "hashcat",
+    "gitleaks"
 ]
 
 

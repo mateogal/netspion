@@ -37,6 +37,7 @@
 > - [Commix](https://github.com/commixproject/commix)
 > - [Wafw00f](https://github.com/EnableSecurity/wafw00f)
 > - [LoadBalancing detector](https://github.com/craig/ge.mine.nu/blob/master/lbd/lbd.sh)
+> - [Git Leaks](https://github.com/gitleaks/gitleaks)
 
 > [!TIP]
 > Recommended additional tools/websites (all credits to respective owners):
@@ -53,6 +54,5 @@
 > - [OWASP ZAProxy](https://github.com/zaproxy/zaproxy)
 > - [Nikto](https://github.com/sullo/nikto)
 > - [Nuclei](https://github.com/projectdiscovery/nuclei)
-> - [Git Leaks](https://github.com/gitleaks/gitleaks)
 > - [The Fat Rat](https://github.com/screetsec/TheFatRat)
 > - [Local Tunnel](https://github.com/localtunnel/localtunnel)
