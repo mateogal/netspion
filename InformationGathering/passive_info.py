@@ -4,6 +4,7 @@ from cmd2 import with_default_category
 import utils.string_format as sf
 from utils.check_var import check_vars
 from utils.utils_shell import UtilsCommandSet
+from utils.validation import safe_filename
 
 PLATFORM_SYSTEM = platform.system()
 
@@ -77,7 +78,7 @@ class PassiveIGShell(cmd2.Cmd):
         "WHOIS"
         if check_vars([{"name": "domain", "value": self.domain}]):
             rt.runBackground(
-                ["whois", self.domain], self.resultsPath + self.domain + "/"
+                ["whois", self.domain], self.resultsPath + safe_filename(self.domain) + "/"
             )
 
     def do_theharvester(self, arg):
@@ -96,10 +97,11 @@ class PassiveIGShell(cmd2.Cmd):
                     "-l",
                     self.limit,
                     "-f",
-                    self.resultsPath + self.domain + "/",
+                    self.resultsPath + safe_filename(self.domain) + "/",
                     "-b",
                     "all",
-                ]
+                ],
+                None,
             )
 
 

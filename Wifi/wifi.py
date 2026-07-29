@@ -1,9 +1,11 @@
-import cmd2, platform, os, time
+import cmd2, platform, os, shutil, time
+from pathlib import Path
 import utils.run_task as rt
 from cmd2 import with_default_category
 import utils.string_format as sf
 from utils.check_var import check_vars
 from utils.utils_shell import UtilsCommandSet
+from utils.validation import safe_filename, valid_interface
 
 PLATFORM_SYSTEM = platform.system()
 
@@ -98,9 +100,8 @@ class WifiShell(cmd2.Cmd):
         self.do_help("-v")
 
     def makeDNSMasqConf(self):
-        dnsmasqConf = open(self.resultsPath + "dnsmasq.conf", "w")
-        # Make cfgs
-        dnsmasqConf.write(
+        with open(self.resultsPath + "dnsmasq.conf", "w", encoding="utf-8") as dnsmasqConf:
+            dnsmasqConf.write(
             f"""interface={self.ap_adapter}
 dhcp-range=192.168.2.2,192.168.2.230,255.255.255.0,12h
 dhcp-option=3,192.168.2.1
@@ -113,12 +114,11 @@ log-queries
 log-dhcp
 listen-address=127.0.0.1
 listen-address=192.168.2.1"""
-        )
-        dnsmasqConf.close()
+            )
 
     def makeHostapdConf(self):
-        hostapdConf = open(self.resultsPath + "hostapd.conf", "w")
-        hostapdConf.write(
+        with open(self.resultsPath + "hostapd.conf", "w", encoding="utf-8") as hostapdConf:
+            hostapdConf.write(
             f"""interface={self.ap_adapter}
 driver=nl80211
 ssid={self.ssid}
@@ -126,28 +126,65 @@ hw_mode=g
 channel={self.ap_channel}
 macaddr_acl=0
 ignore_broadcast_ssid=0"""
-        )
-        hostapdConf.close()
+            )
+
+    def validateAPConfig(self):
+        if not valid_interface(self.ap_adapter) or not valid_interface(self.masq_interface):
+            print(sf.fail("Invalid network interface name."))
+            return False
+        try:
+            channel = int(self.ap_channel)
+        except ValueError:
+            print(sf.fail("AP channel must be numeric."))
+            return False
+        if channel < 1 or channel > 196:
+            print(sf.fail("AP channel is outside the supported range."))
+            return False
+        if not self.ssid or len(self.ssid.encode("utf-8")) > 32 or "\n" in self.ssid or "\r" in self.ssid:
+            print(sf.fail("SSID must be a single line of at most 32 bytes."))
+            return False
+        return True
 
     def setFirewallRules(self):
-        rt.normalCapture(
-            f"ifconfig {self.ap_adapter} up 192.168.2.1 netmask 255.255.255.0;\
-            route add -net 192.168.2.0 netmask 255.255.255.0 gw 192.168.2.1;\
-            iptables-save > {self.resultsPath}iptables.bkp;\
-            iptables --flush;\
-            iptables --table nat --flush;\
-            iptables --delete-chain;\
-            iptables --table nat --delete-chain;\
-            iptables --table nat --append POSTROUTING --out-interface={self.out_interface} -j MASQUERADE;\
-            iptables --append FORWARD --in-interface {self.ap_adapter} -j ACCEPT;\
-            echo 1 > /proc/sys/net/ipv4/ip_forward;\
-            iptables -A INPUT -p tcp --dport 443 -j ACCEPT;\
-            iptables -A INPUT -p tcp --dport 80 -j ACCEPT;\
-            iptables -A INPUT -p udp --dport 53 -j ACCEPT;\
-            iptables -A INPUT -p udp --dport 67 -j ACCEPT;\
-            iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination 192.168.2.1:80;\
-            iptables -t nat -A PREROUTING -p tcp --dport 443 -j DNAT --to-destination 192.168.2.1:443"
-        )
+        backup = rt.normalCapture(["iptables-save"])
+        if backup.returncode != 0:
+            print(sf.fail("Could not back up iptables; firewall was not changed."))
+            return False
+        backup_path = Path(self.resultsPath) / "iptables.bkp"
+        backup_path.write_text(backup.stdout, encoding="utf-8")
+        backup_path.chmod(0o600)
+
+        commands = [
+            ["ip", "link", "set", "dev", self.ap_adapter, "up"],
+            ["ip", "addr", "replace", "192.168.2.1/24", "dev", self.ap_adapter],
+        ]
+        for command in commands:
+            result = rt.normalCapture(command)
+            if result.returncode != 0:
+                print(sf.fail(result.stderr.strip() or f"Command failed: {' '.join(command)}"))
+                return False
+
+        rules = [
+            (["-t", "nat"], "POSTROUTING", ["-o", self.masq_interface, "-j", "MASQUERADE"]),
+            ([], "FORWARD", ["-i", self.ap_adapter, "-j", "ACCEPT"]),
+            ([], "INPUT", ["-p", "tcp", "--dport", "80", "-j", "ACCEPT"]),
+            ([], "INPUT", ["-p", "udp", "--dport", "53", "-j", "ACCEPT"]),
+            ([], "INPUT", ["-p", "udp", "--dport", "67", "-j", "ACCEPT"]),
+            (["-t", "nat"], "PREROUTING", ["-p", "tcp", "--dport", "80", "-j", "DNAT", "--to-destination", "192.168.2.1:80"]),
+        ]
+        for table, chain, rule in rules:
+            check = rt.normalCapture(["iptables", *table, "-C", chain, *rule])
+            if check.returncode != 0:
+                add = rt.normalCapture(["iptables", *table, "-A", chain, *rule])
+                if add.returncode != 0:
+                    print(sf.fail(add.stderr.strip() or f"Could not add {chain} rule."))
+                    return False
+        try:
+            Path("/proc/sys/net/ipv4/ip_forward").write_text("1\n", encoding="ascii")
+        except OSError as exc:
+            print(sf.fail(f"Could not enable IPv4 forwarding: {exc}"))
+            return False
+        return True
 
     def reloadConf(self):
         file = open(self.resultsPath + "saved.conf", "r")

@@ -1,4 +1,5 @@
-import cmd2, platform, time
+import cmd2
+import platform
 import utils.init as init
 import utils.run_task as rt
 import ActiveDirectory.ad as ad_cs
@@ -11,15 +12,9 @@ import utils.string_format as sf
 import InformationGathering.passive_info as pig
 from cmd2 import CommandSet, with_default_category
 
-import platform
-
 PLATFORM_SYSTEM = platform.system()
 
 RESULTS_PATH = "/tmp/netspion/"
-
-init.main()
-time.sleep(3)
-
 
 @with_default_category("Sub Menu Tools")
 class SubMenuCommandSet(CommandSet):
@@ -124,4 +119,10 @@ class NetspionShell(cmd2.Cmd):
         )
 
 
-NetspionShell().cmdloop()
+def main():
+    init.main()
+    NetspionShell().cmdloop()
+
+
+if __name__ == "__main__":
+    main()

@@ -1,4 +1,4 @@
-import cmd2, platform, subprocess, os
+import cmd2, platform, os
 from cmd2 import with_default_category
 import utils.string_format as sf
 import utils.run_task as rt
@@ -82,7 +82,7 @@ class ADHacking(cmd2.Cmd):
                 {"name": "user", "value": self.user},
             ]
         ):
-            rt.runBackground(["impacket-secretdsump", self.domain + "/" + self.user])
+            rt.runBackground(["impacket-secretsdump", self.domain + "/" + self.user])
 
     def do_pth_smb(self, arg):
         "Pass the Hash (SMB Client)"
@@ -207,13 +207,13 @@ class ADHacking(cmd2.Cmd):
             rt.runBackground(["responder", "-I", self.interface, "-Pv"])
 
     def do_ntlmsmb_relay(self, arg):
+        "NTLM/SMB Relay (authorized lab networks only)"
         if check_vars(
             [
                 {"name": "network", "value": self.network},
                 {"name": "interface", "value": self.interface},
             ]
         ):
-            "NTLM/SMB Relay"
             rt.runBackground(["crackmapexec", "smb", self.network])
             print("Generating targets.txt\n")
             f = open(self.targets_file, "w")

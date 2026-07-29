@@ -4,6 +4,7 @@ from cmd2 import with_default_category
 import utils.string_format as sf
 from utils.check_var import check_vars
 from utils.utils_shell import UtilsCommandSet
+from utils.validation import safe_filename
 
 PLATFORM_SYSTEM = platform.system()
 
@@ -78,7 +79,7 @@ class WebHacking(cmd2.Cmd):
                     self.domain,
                     "-oJ",
                     "-o",
-                    self.resultsPath + f"subfinder_{self.domain}.json",
+                    self.resultsPath + f"subfinder_{safe_filename(self.domain)}.json",
                 ],
                 None
             )
@@ -100,7 +101,7 @@ class WebHacking(cmd2.Cmd):
                     "-w",
                     self.wordlist,
                     "-o",
-                    self.resultsPath + f"gobuster_dns_{self.domain}.txt",
+                    self.resultsPath + f"gobuster_dns_{safe_filename(self.domain)}.txt",
                 ],
                 None
             )
@@ -122,7 +123,7 @@ class WebHacking(cmd2.Cmd):
                     "-w",
                     self.wordlist,
                     "-o",
-                    self.resultsPath + f"gobuster_url_{(self.url).split('//')[1]}.txt",
+                    self.resultsPath + f"gobuster_url_{safe_filename(self.url)}.txt",
                 ],
                 None
             )
@@ -144,7 +145,7 @@ class WebHacking(cmd2.Cmd):
                     self.wordlist,
                     "-recursion",
                     "-o",
-                    self.resultsPath + f"ffuf_url_parameters{self.url}.json",
+                    self.resultsPath + f"ffuf_url_parameters_{safe_filename(self.url)}.json",
                 ],
                 None
             )
@@ -157,7 +158,7 @@ class WebHacking(cmd2.Cmd):
                 {"name": "wordlist", "value": self.wordlist},
             ]
         ):
-            rt.newTerminal(
+            rt.runBackground(
                 [
                     "ffuf",
                     "-request",
@@ -166,7 +167,7 @@ class WebHacking(cmd2.Cmd):
                     self.wordlist,
                     "-o",
                     self.resultsPath
-                    + f"ffuf_request_parameters{self.request_file}.json",
+                    + f"ffuf_request_parameters_{safe_filename(self.request_file)}.json",
                 ],
                 None
             )
@@ -181,7 +182,7 @@ class WebHacking(cmd2.Cmd):
                 {"name": "bodyData", "value": self.bodyData},
             ]
         ):
-            rt.newTerminal(
+            rt.runBackground(
                 [
                     "commix",
                     "-u",

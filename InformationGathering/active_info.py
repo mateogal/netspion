@@ -4,6 +4,7 @@ from cmd2 import with_default_category
 import utils.string_format as sf
 from utils.check_var import check_vars
 from utils.utils_shell import UtilsCommandSet
+from utils.validation import safe_filename
 
 PLATFORM_SYSTEM = platform.system()
 
@@ -68,7 +69,7 @@ class ActiveIGShell(cmd2.Cmd):
     def do_host_discover(self, arg):
         "Nmap Host Discovery"
         if check_vars([{"name": "network", "value": self.network}]):
-            network = self.network.replace("/", "")
+            network = safe_filename(self.network)
             if self.pkt_fragment == "No":
                 rt.runBackground(
                     [
@@ -85,11 +86,15 @@ class ActiveIGShell(cmd2.Cmd):
                     None,
                 )
             else:
-                mtu = str(input("MTU: "))
-                if (mtu % 8) != 0:
+                try:
+                    mtu = int(input("MTU (multiple of 8): "))
+                except ValueError:
                     print("Invalid MTU")
                     return
-                network = self.network.replace("/", "")
+                if mtu < 8 or mtu > 65528 or mtu % 8 != 0:
+                    print("Invalid MTU")
+                    return
+                network = safe_filename(self.network)
                 rt.runBackground(
                     [
                         "nmap",
@@ -98,7 +103,7 @@ class ActiveIGShell(cmd2.Cmd):
                         "-sS",
                         "-p-",
                         "--mtu",
-                        mtu,
+                        str(mtu),
                         self.network,
                         "-oA",
                         self.resultsPath + "mtu_hostDiscovery_" + network,
@@ -110,7 +115,7 @@ class ActiveIGShell(cmd2.Cmd):
     def do_syn_port_scan(self, arg):
         "Nmap Port Scan (SYN)"
         if check_vars([{"name": "network", "value": self.network}]):
-            network = self.network.replace("/", "")
+            network = safe_filename(self.network)
             rt.runBackground(
                 [
                     "nmap",
@@ -129,7 +134,7 @@ class ActiveIGShell(cmd2.Cmd):
     def do_tcp_port_scan(self, arg):
         "Nmap Port Scan (TCP)"
         if check_vars([{"name": "network", "value": self.network}]):
-            network = self.network.replace("/", "")
+            network = safe_filename(self.network)
             rt.runBackground(
                 [
                     "nmap",
@@ -148,7 +153,7 @@ class ActiveIGShell(cmd2.Cmd):
     def do_udp_port_scan(self, arg):
         "Nmap Port Scan (UDP)"
         if check_vars([{"name": "network", "value": self.network}]):
-            network = self.network.replace("/", "")
+            network = safe_filename(self.network)
             rt.runBackground(
                 [
                     "nmap",
@@ -167,7 +172,7 @@ class ActiveIGShell(cmd2.Cmd):
     def do_aggressive_scan(self, arg):
         "Nmap Port Scan (Aggressive / All)"
         if check_vars([{"name": "network", "value": self.network}]):
-            network = self.network.replace("/", "")
+            network = safe_filename(self.network)
             rt.runBackground(
                 [
                     "nmap",
@@ -188,17 +193,17 @@ class ActiveIGShell(cmd2.Cmd):
         if check_vars([{"name": "domain", "value": self.domain}]):
             rt.runBackground(
                 ["nslookup", "-q=any", self.domain],
-                self.resultsPath + self.domain + "/",
+                self.resultsPath + safe_filename(self.domain) + "/",
             )
             rt.runBackground(
                 ["dig", self.domain, "ANY", "+trace"],
-                self.resultsPath + self.domain + "/",
+                self.resultsPath + safe_filename(self.domain) + "/",
             )
 
     def do_gitleaks(self, arg):
         "Search leaks in git repository"
         if check_vars([{"name": "git_repo", "value": self.git_repo}]):
-            repo = self.git_repo.replace("/", "")
+            repo = safe_filename(self.git_repo)
             rt.runBackground(
                 [
                     "gitleaks",

@@ -1,1 +1,8 @@
 **/__pycache__/
+.env
+.venv/
+*.log
+*.cap
+*.pcap
+*.pcapng
+results/

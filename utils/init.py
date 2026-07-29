@@ -1,36 +1,39 @@
-import subprocess, platform, time, importlib, sys, os
+"""Startup checks for Netspion.
 
-#os.chdir(sys._MEIPASS)
+Startup is deliberately non-destructive: it never installs packages and does
+not require a root shell.  Commands which need elevated privileges will fail
+normally and leave an error log for the operator.
+"""
 
-with open("requirements.txt") as file:
-    for module in file:
-        module = module.strip()
-        try:
-            importlib.import_module(module)
-        except:
-            print(
-                "Missing python modules. Please install them using: pip install -r requirements.txt"
-            )
-            sys.exit()
+from __future__ import annotations
 
-from utils import run_task
+import importlib.util
+import os
+import platform
+import shutil
+from dataclasses import dataclass
+
 from utils import string_format
 
-PLATFORM_SYSTEM = platform.system()
-DEPENDENCIES_LIST = [
-    "libpq-dev",
+
+PYTHON_MODULES = {
+    "cmd2": "cmd2",
+    "termcolor": "termcolor",
+    "scapy": "scapy",
+    "impacket": "impacket",
+    "psycopg2-binary": "psycopg2",
+}
+
+EXTERNAL_TOOLS = (
     "aircrack-ng",
     "hostapd",
-    "metasploit-framework",
-    "theharvester",
+    "msfconsole",
+    "theHarvester",
     "nmap",
     "whois",
-    "qterminal",
     "reaver",
     "dnsmasq",
-    "bloodhound",
     "lighttpd",
-    "php-cgi",
     "cowpatty",
     "responder",
     "whatweb",
@@ -40,97 +43,55 @@ DEPENDENCIES_LIST = [
     "commix",
     "wafw00f",
     "hashcat",
-    "gitleaks"
-]
+    "john",
+    "gitleaks",
+)
 
 
-def checkOS():
-    if PLATFORM_SYSTEM != "Linux":
-        print("This program must run on Linux OS !!!")
-        exit()
+@dataclass(frozen=True)
+class DiagnosticReport:
+    supported_os: bool
+    running_as_root: bool
+    missing_python: tuple[str, ...]
+    missing_tools: tuple[str, ...]
 
-    if run_task.normalCapture(["cat", "/etc/debian_version"]).returncode == 0:
-        PKG_INSTALLER = "apt install -y"
-        PKG_CHECK = "dpkg -s"
-
-    elif run_task.normalCapture(["cat", "/etc/SuSE-release"]).returncode == 0:
-        PKG_INSTALLER = "zypper install"
-
-    elif run_task.normalCapture(["cat", "/etc/redhat-release"]).returncode == 0:
-        PKG_INSTALLER = "yum -y install"
-
-    else:
-        print("No package manager found")
-        exit()
-
-    return PKG_INSTALLER, PKG_CHECK
+    @property
+    def ready(self) -> bool:
+        return self.supported_os and not self.missing_python
 
 
-def checkDependencies(PKG_INSTALLER, PKG_CHECK):
-    print(string_format.warning("CHECKING ALL NECESSARY DEPENDENCIES"))
-    time.sleep(2)
-    missing_dep = []
-    error = string_format.fail(" not installed")
-    success = string_format.success(" already installed")
-
-    for dependency in DEPENDENCIES_LIST:
-
-        command = f"{PKG_CHECK} {dependency}"
-        task = run_task.progress(command)
-
-        if task == 1:
-            print(dependency.upper().ljust(20) + error.rjust(50))
-            missing_dep.append(dependency)
-
-        else:
-            print(dependency.upper().ljust(20) + success.rjust(50))
-
-    if len(missing_dep) != 0:
-        print("\nMissing dependencies: ", missing_dep)
-        opc = str(input("Do you want to install all missing dependencies? [Y/n]: "))
-
-        if opc == "Y" or opc == "y":
-            installDependencies(PKG_INSTALLER, missing_dep)
-
-        else:
-            print("You must install all dependencies")
-            exit()
-
-    else:
-        print(string_format.success("\nAll dependencies are satisfied"))
+def diagnose() -> DiagnosticReport:
+    return DiagnosticReport(
+        supported_os=platform.system() == "Linux",
+        running_as_root=getattr(os, "geteuid", lambda: 1)() == 0,
+        missing_python=tuple(
+            package
+            for package, module in PYTHON_MODULES.items()
+            if importlib.util.find_spec(module) is None
+        ),
+        missing_tools=tuple(tool for tool in EXTERNAL_TOOLS if shutil.which(tool) is None),
+    )
 
 
-def installDependencies(PKG_INSTALLER, missing_dep):
-    print(string_format.warning("\nINSTALLING ALL NECESSARY DEPENDENCIES\n"))
-    exitCode = 1
-    for dependency in missing_dep:
-        command = f"{PKG_INSTALLER} {dependency}"
-        task = run_task.normalShell(command)
-
-        if task.returncode == 0:
-            print(string_format.success(dependency + " successfully installed"))
-        else:
-            print(string_format.fail(dependency + " failed to install"))
-            exitCode = 0
-
-    if not exitCode:
+def print_report(report: DiagnosticReport) -> None:
+    os_status = "Linux supported" if report.supported_os else "unsupported OS (Linux required)"
+    privilege_status = "root" if report.running_as_root else "unprivileged (recommended at startup)"
+    print(string_format.info(f"Environment: {os_status}; privilege: {privilege_status}"))
+    if report.missing_python:
         print(
-            string_format.warning(
-                "\nPLEASE MANUALLY CHECK FAILED DEPENDENCIES OR RUN INSTALLER AGAIN"
-            )
+            string_format.fail("Missing Python packages: ")
+            + ", ".join(report.missing_python)
+            + ". Install with: python -m pip install -r requirements.txt"
         )
-        exit()
+    if report.missing_tools:
+        print(
+            string_format.warning("Unavailable optional tools: ")
+            + ", ".join(report.missing_tools)
+        )
 
 
-def checkRoot():
-    current_user = subprocess.run(["whoami"], capture_output=True, text=True)
-    current_user = (current_user.stdout).strip()
-    if current_user != "root":
-        print("Must be run as root")
-        exit()
-
-
-def main():
-    checkRoot()
-    PKG_INSTALLER, PKG_CHECK = checkOS()
-    checkDependencies(PKG_INSTALLER, PKG_CHECK)
+def main() -> DiagnosticReport:
+    """Run and print non-mutating startup diagnostics."""
+    report = diagnose()
+    print_report(report)
+    return report

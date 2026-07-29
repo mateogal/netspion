@@ -1,31 +1,35 @@
+import os
 import subprocess
 import psycopg2
 
 
 def main(resultsPath):
-    DATABASE_NAME = "msf"
-    DATABASE_USER = "msf"
-    DATABASE_HOST = "127.0.0.1"
-    DATABASE_PASSWORD = "+94gjzozqC1I99QmNyJVqzRb7JQsdC4LnN2FTHnp4fE="
-    DATABASE_PORT = 5432
+    database_name = os.environ.get("NETSPION_MSF_DB_NAME", "msf")
+    database_user = os.environ.get("NETSPION_MSF_DB_USER", "msf")
+    database_host = os.environ.get("NETSPION_MSF_DB_HOST", "127.0.0.1")
+    database_password = os.environ.get("NETSPION_MSF_DB_PASSWORD")
+    database_port = int(os.environ.get("NETSPION_MSF_DB_PORT", "5432"))
 
     conn = psycopg2.connect(
-        database=DATABASE_NAME,
-        user=DATABASE_USER,
-        password=DATABASE_PASSWORD,
-        host=DATABASE_HOST,
-        port=DATABASE_PORT,
+        database=database_name,
+        user=database_user,
+        password=database_password,
+        host=database_host,
+        port=database_port,
     )
 
     print("Running SQL Query")
 
-    cur = conn.cursor()
-    cur.execute(
-        "SELECT r.name, v.name, h.address FROM hosts h, refs r, vulns v, vulns_refs vr WHERE vr.ref_id=r.id AND vr.vuln_id=v.id AND v.host_id=h.id"
-    )
-    rows = cur.fetchall()
-    conn.commit()
-    conn.close()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT r.name, v.name, h.address FROM hosts h, refs r, vulns v, "
+                "vulns_refs vr WHERE vr.ref_id=r.id AND vr.vuln_id=v.id "
+                "AND v.host_id=h.id"
+            )
+            rows = cur.fetchall()
+    finally:
+        conn.close()
     tempstr = ""
 
     print("Generating internal CVE search string")

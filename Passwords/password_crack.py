@@ -100,17 +100,11 @@ class PasswordCrackingShell(cmd2.Cmd):
                 {"name": "wordlist", "value": self.wordlist},
             ]
         ):
-            rt.runBackground(
-                [
-                    "hashcat",
-                    "-m",
-                    self.encode,
-                    "-a",
-                    "0",
-                    self.hash_file,
-                    self.wordlist,
-                ]
-            )
+            command = ["hashcat"]
+            if self.encode != "*":
+                command.extend(["-m", self.encode])
+            command.extend(["-a", "0", self.hash_file, self.wordlist])
+            rt.runBackground(command)
 
     def do_john_bf(self, arg):
         "JohnTheRipper brute force password crack"
@@ -120,7 +114,11 @@ class PasswordCrackingShell(cmd2.Cmd):
                 {"name": "hash_file", "value": self.hash_file},
             ]
         ):
-            rt.runBackground(["john", "--format=" + self.encode, self.hash_file])
+            command = ["john"]
+            if self.encode != "*":
+                command.append("--format=" + self.encode)
+            command.append(self.hash_file)
+            rt.runBackground(command)
 
     def do_john_wl(self, arg):
         "JohnTheRipper wordlist file (dictionary) password crack"
@@ -131,15 +129,11 @@ class PasswordCrackingShell(cmd2.Cmd):
                 {"name": "wordlist", "value": self.wordlist},
             ]
         ):
-            rt.runBackground(
-                [
-                    "john",
-                    "--format=" + self.encode,
-                    "--wordlist=",
-                    self.wordlist,
-                    self.hash_file,
-                ]
-            )
+            command = ["john"]
+            if self.encode != "*":
+                command.append("--format=" + self.encode)
+            command.extend(["--wordlist=" + self.wordlist, self.hash_file])
+            rt.runBackground(command)
 
 
 def main():
