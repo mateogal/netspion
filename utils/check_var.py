@@ -1,13 +1,13 @@
+from __future__ import annotations
+
+from typing import Any
+
 from . import string_format as sf
 
 
-def check_vars(varList):
-    msg = ""
-    for var in varList:
-        if var["value"] == "":
-            msg += f"{var['name']}, "
-    if msg != "":
-        print(sf.fail(f"{msg}variable/s are empty."))
-        return 0
-    else:
-        return 1
+def check_vars(var_list: list[dict[str, Any]]) -> bool:
+    empty = [v["name"] for v in var_list if not v.get("value")]
+    if empty:
+        print(sf.fail(f"Required variable(s) empty: {', '.join(empty)}"))
+        return False
+    return True

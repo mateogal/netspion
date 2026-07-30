@@ -3,3 +3,4 @@ termcolor>=2.3,<4
 impacket>=0.11,<1
 cmd2>=2.4,<3
 psycopg2-binary>=2.9,<3
+python-dateutil>=2.8,<3

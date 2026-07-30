@@ -6,3 +6,7 @@
 *.pcap
 *.pcapng
 results/
+*.json.tmp
+*.out.log
+*.err.log
+DOCS/

@@ -1,17 +1,22 @@
+from __future__ import annotations
+
+import os
 import shlex
+import shutil
 import subprocess
+
 from utils import run_task as rt
 from cmd2 import CommandSet, with_default_category
 
 
 @with_default_category("Utils")
 class UtilsCommandSet(CommandSet):
-    def __init__(self):
-        super().__init__()
-
     def do_clear(self, arg):
         "Clear screen"
-        subprocess.run(["clear"], check=False)
+        if os.name == "nt":
+            subprocess.run(["cmd", "/c", "cls"], check=False)
+        else:
+            subprocess.run(["clear"], check=False)
 
     def do_check_processes(self, arg):
         "Show processes status"
@@ -36,8 +41,8 @@ class UtilsCommandSet(CommandSet):
             print(f"Execution mode: {rt.get_execution_mode()}")
             return
         try:
-            self.mode = rt.set_execution_mode(value)
-            print(f"Execution mode: {self.mode}")
+            normalized = rt.set_execution_mode(value)
+            print(f"Execution mode: {normalized}")
         except ValueError as exc:
             print(exc)
 

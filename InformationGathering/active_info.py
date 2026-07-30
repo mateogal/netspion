@@ -1,90 +1,59 @@
-import cmd2, platform, os
-import utils.run_task as rt
+"""Active Information Gathering — Nmap scans, DNS, gitleaks."""
+
+from __future__ import annotations
+
+import os
+import platform
+
+import cmd2
 from cmd2 import with_default_category
+
+import utils.run_task as rt
 import utils.string_format as sf
+from utils.base_shell import BaseShell
 from utils.check_var import check_vars
-from utils.utils_shell import UtilsCommandSet
 from utils.validation import safe_filename
 
 PLATFORM_SYSTEM = platform.system()
 
 
 @with_default_category("Main commands")
-class ActiveIGShell(cmd2.Cmd):
-    intro = sf.text(
-        "Netspion Active Info-Gath Sub menu. Use 'help / help -v' for verbose / 'help <topic>' for details. \n"
-    )
-    prompt = sf.success("(netspion Active-IG): ")
-
+class ActiveIGShell(BaseShell):
     def __init__(self):
-        super().__init__(auto_load_commands=False)
-        self.resultsPath = "/tmp/netspion/Active-IG/"
+        super().__init__("Active-IG", "Active Information Gathering")
         self.network = ""
         self.domain = ""
         self.pkt_fragment = "No"
         self.git_repo = ""
-
-        self.add_settable(cmd2.Settable("network", str, "Target Network", self))
-        self.add_settable(cmd2.Settable("domain", str, "Target Domain", self))
-        self.add_settable(
-            cmd2.Settable(
-                "pkt_fragment",
-                str,
-                "Packet Fragment mode for NMAP (default: no)",
-                self,
-                choices=(["Yes", "No"]),
-            )
-        )
-        self.add_settable(
-            cmd2.Settable(
-                "git_repo",
-                str,
-                "GIT repository location",
-                self,
-                completer=cmd2.Cmd.path_complete,
-            )
-        )
-
-        self.register_command_set(UtilsCommandSet())
-        self.default_category = "cmd2 Built-in Commands"
-        self.remove_settable("debug")
-        self.remove_settable("allow_style")
-        self.remove_settable("always_show_hint")
-        self.remove_settable("echo")
-        self.remove_settable("feedback_to_output")
-        self.remove_settable("max_completion_items")
-        self.remove_settable("quiet")
-        self.remove_settable("timing")
-
-        self.poutput(
-            sf.info("RUNNING ON: ")
-            + sf.success(PLATFORM_SYSTEM + platform.release() + platform.version())
-        )
-        self.poutput(
-            sf.info("ALL RESULTS WILL BE STORED IN: ") + sf.success(self.resultsPath)
-        )
+        self.ports = "top-1000"
+        self.rate = "1000"
+        self.add_settable(cmd2.Settable("network", str, "Target network (192.168.1.0/24)", self))
+        self.add_settable(cmd2.Settable("domain", str, "Target domain", self))
+        self.add_settable(cmd2.Settable("pkt_fragment", str, "Nmap fragment mode", self, choices=["Yes", "No"]))
+        self.add_settable(cmd2.Settable("git_repo", str, "Git repo path", self, completer=cmd2.Cmd.path_complete))
+        self.add_settable(cmd2.Settable("ports", str, "Port range or top-1000", self))
+        self.add_settable(cmd2.Settable("rate", str, "Nmap rate limiting", self))
         os.makedirs(self.resultsPath, exist_ok=True)
         self.do_help("-v")
 
-    def do_host_discover(self, arg):
-        "Nmap Host Discovery"
+    def _nmap_base(self, extra_args: list[str], suffix: str):
         if check_vars([{"name": "network", "value": self.network}]):
-            network = safe_filename(self.network)
+            safe = safe_filename(self.network)
+            nmap_args = ["nmap", "-v", "--reason"]
+            if self.rate:
+                nmap_args.extend(["--min-rate", self.rate])
+            nmap_args.extend(extra_args)
+            if self.ports and self.ports != "top-1000":
+                nmap_args.extend(["-p", self.ports])
+            nmap_args.extend([self.network, "-oA", self.resultsPath + suffix + safe, "--webxml"])
+            rt.runBackground(nmap_args)
+
+    def do_host_discover(self, arg):
+        "Nmap host discovery"
+        if check_vars([{"name": "network", "value": self.network}]):
+            safe = safe_filename(self.network)
             if self.pkt_fragment == "No":
-                rt.runBackground(
-                    [
-                        "nmap",
-                        "-v",
-                        "--reason",
-                        "-sn",
-                        "-PS",
-                        self.network,
-                        "-oA",
-                        self.resultsPath + "hostDiscovery_" + network,
-                        "--webxml",
-                    ],
-                    None,
-                )
+                rt.runBackground(["nmap", "-v", "--reason", "-sn", "-PS", self.network, "-oA", self.resultsPath + "hostDiscovery_" + safe, "--webxml"])
             else:
                 try:
                     mtu = int(input("MTU (multiple of 8): "))
@@ -94,130 +63,60 @@ class ActiveIGShell(cmd2.Cmd):
                 if mtu < 8 or mtu > 65528 or mtu % 8 != 0:
                     print("Invalid MTU")
                     return
-                network = safe_filename(self.network)
-                rt.runBackground(
-                    [
-                        "nmap",
-                        "-v",
-                        "--reason",
-                        "-sS",
-                        "-p-",
-                        "--mtu",
-                        str(mtu),
-                        self.network,
-                        "-oA",
-                        self.resultsPath + "mtu_hostDiscovery_" + network,
-                        "--webxml",
-                    ],
-                    None,
-                )
+                rt.runBackground(["nmap", "-v", "--reason", "-sS", "-p-", "--mtu", str(mtu), self.network, "-oA", self.resultsPath + "mtu_hostDiscovery_" + safe, "--webxml"])
 
     def do_syn_port_scan(self, arg):
-        "Nmap Port Scan (SYN)"
-        if check_vars([{"name": "network", "value": self.network}]):
-            network = safe_filename(self.network)
-            rt.runBackground(
-                [
-                    "nmap",
-                    "-v",
-                    "--reason",
-                    "-sS",
-                    "-p-",
-                    self.network,
-                    "-oA",
-                    self.resultsPath + "portScanSYN_" + network,
-                    "--webxml",
-                ],
-                None,
-            )
+        "Nmap SYN scan (stealth + fast)"
+        self._nmap_base(["-sS"], "portScanSYN_")
 
     def do_tcp_port_scan(self, arg):
-        "Nmap Port Scan (TCP)"
-        if check_vars([{"name": "network", "value": self.network}]):
-            network = safe_filename(self.network)
-            rt.runBackground(
-                [
-                    "nmap",
-                    "-v",
-                    "--reason",
-                    "-sT",
-                    "-p-",
-                    self.network,
-                    "-oA",
-                    self.resultsPath + "portScanTCP_" + network,
-                    "--webxml",
-                ],
-                None,
-            )
+        "Nmap TCP connect scan"
+        self._nmap_base(["-sT"], "portScanTCP_")
 
     def do_udp_port_scan(self, arg):
-        "Nmap Port Scan (UDP)"
-        if check_vars([{"name": "network", "value": self.network}]):
-            network = safe_filename(self.network)
-            rt.runBackground(
-                [
-                    "nmap",
-                    "-v",
-                    "--reason",
-                    "-sU",
-                    "-p-",
-                    self.network,
-                    "-oA",
-                    self.resultsPath + "portScanUDP_" + network,
-                    "--webxml",
-                ],
-                None,
-            )
+        "Nmap UDP scan (slow)"
+        self._nmap_base(["-sU"], "portScanUDP_")
 
     def do_aggressive_scan(self, arg):
-        "Nmap Port Scan (Aggressive / All)"
-        if check_vars([{"name": "network", "value": self.network}]):
-            network = safe_filename(self.network)
-            rt.runBackground(
-                [
-                    "nmap",
-                    "-v",
-                    "--reason",
-                    "-A",
-                    "-p-",
-                    self.network,
-                    "-oA",
-                    self.resultsPath + "portScanAll_" + network,
-                    "--webxml",
-                ],
-                None,
-            )
+        "Nmap aggressive (-A) full scan"
+        self._nmap_base(["-A"], "portScanAll_")
+
+    def do_service_scan(self, arg):
+        "Nmap service/version detection (-sV)"
+        self._nmap_base(["-sV", "--version-intensity", "9"], "serviceScan_")
+
+    def do_os_detection(self, arg):
+        "Nmap OS detection (-O)"
+        self._nmap_base(["-O", "--osscan-guess"], "osDetect_")
+
+    def do_vuln_scan(self, arg):
+        "Nmap vulnerability scripts (--script vuln)"
+        self._nmap_base(["-sV", "--script", "vuln"], "vulnScan_")
+
+    def do_nse_all(self, arg):
+        "Nmap all safe NSE scripts"
+        self._nmap_base(["-sV", "--script", "safe"], "nseSafe_")
+
+    def do_nse_smb(self, arg):
+        "Nmap SMB-specific NSE scripts"
+        self._nmap_base(["-sV", "--script", "smb-enum*"], "nseSMB_")
+
+    def do_nse_http(self, arg):
+        "Nmap HTTP-specific NSE scripts"
+        self._nmap_base(["-sV", "--script", "http-*"], "nseHTTP_")
 
     def do_nslookup_dig(self, arg):
-        "Nslookup & DIG"
+        "DNS lookup with nslookup + dig"
         if check_vars([{"name": "domain", "value": self.domain}]):
-            rt.runBackground(
-                ["nslookup", "-q=any", self.domain],
-                self.resultsPath + safe_filename(self.domain) + "/",
-            )
-            rt.runBackground(
-                ["dig", self.domain, "ANY", "+trace"],
-                self.resultsPath + safe_filename(self.domain) + "/",
-            )
+            rt.runBackground(["nslookup", "-q=any", self.domain], self.resultsPath + safe_filename(self.domain) + "/")
+            rt.runBackground(["dig", self.domain, "ANY", "+trace"], self.resultsPath + safe_filename(self.domain) + "/")
 
     def do_gitleaks(self, arg):
-        "Search leaks in git repository"
+        "GitLeaks secret scanner"
         if check_vars([{"name": "git_repo", "value": self.git_repo}]):
             repo = safe_filename(self.git_repo)
-            rt.runBackground(
-                [
-                    "gitleaks",
-                    "detect",
-                    "-v",
-                    "-s",
-                    self.git_repo,
-                    "-r",
-                    f"{self.resultsPath}gitleaks_{repo}.json",
-                ],
-                None,
-            )
+            rt.runBackground(["gitleaks", "detect", "-v", "-s", self.git_repo, "-r", f"{self.resultsPath}gitleaks_{repo}.json"])
 
 
 def main():
-    ActiveIGShell().do_clear(1)
     ActiveIGShell().cmdloop()

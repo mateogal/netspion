@@ -1,9 +1,7 @@
-class ANSI:
-    def background(code):
-        return "\33[{code}m".format(code=code)
+"""DEPRECATED — Use utils.string_format instead.
 
-    def style_text(code):
-        return "\33[{code}m".format(code=code)
+This module is kept for backwards compatibility only.
+All new code should import from ``utils.string_format``.
+"""
 
-    def color_text(code):
-        return "\33[{code}m".format(code=code)
+from .string_format import title, warning, success, text, fail, info  # noqa: F401

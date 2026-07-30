@@ -25,7 +25,16 @@ from typing import Sequence
 from . import string_format as sf
 
 
-DEFAULT_RESULTS_ROOT = Path(os.environ.get("NETSPION_RESULTS_DIR", "/tmp/netspion"))
+def _default_results_root() -> Path:
+    env = os.environ.get("NETSPION_RESULTS_DIR")
+    if env:
+        return Path(env)
+    if os.name == "nt":
+        return Path(os.environ.get("TEMP", "C:\\Temp")) / "netspion"
+    return Path("/tmp/netspion")
+
+
+DEFAULT_RESULTS_ROOT = _default_results_root()
 PROCESS_DIR = DEFAULT_RESULTS_ROOT / "processes"
 VALID_MODES = {"background", "terminal"}
 _EXECUTION_MODE = "background"
@@ -196,6 +205,10 @@ def _refresh(record: ProcessRecord) -> ProcessRecord:
     return record
 
 
+def get_results_root() -> Path:
+    return DEFAULT_RESULTS_ROOT
+
+
 def set_execution_mode(mode: str) -> str:
     """Set the process mode used by subsequent ``runBackground`` calls."""
     global _EXECUTION_MODE
@@ -276,20 +289,30 @@ def _start_background(command: Sequence[object], save_path=None) -> ProcessRecor
 
 def _terminal_command(script: str) -> list[str]:
     configured = os.environ.get("NETSPION_TERMINAL")
-    candidates = [configured] if configured else [
-        "qterminal",
-        "x-terminal-emulator",
-        "gnome-terminal",
-        "konsole",
-    ]
-    terminal = next((candidate for candidate in candidates if candidate and shutil.which(candidate)), None)
+    if configured:
+        candidates = [configured]
+    elif os.name == "nt":
+        candidates = ["wt.exe", "powershell.exe", "cmd.exe"]
+    else:
+        candidates = ["qterminal", "x-terminal-emulator", "gnome-terminal", "konsole", "xterm"]
+
+    terminal = next((c for c in candidates if c and shutil.which(c)), None)
     if not terminal:
         raise RuntimeError(
             "no supported terminal emulator found; set NETSPION_TERMINAL or use background mode"
         )
-    name = Path(terminal).name
+
+    name = Path(terminal).name.lower()
+
+    if os.name == "nt":
+        if name == "wt.exe":
+            return [terminal, "powershell", "-NoExit", "-Command", script]
+        return [terminal, "-NoExit", "-Command", script]
+
     if name == "gnome-terminal":
         return [terminal, "--", "bash", "-lc", script]
+    if name in ("konsole", "xfce4-terminal"):
+        return [terminal, "-e", "bash", "-lc", script]
     return [terminal, "-e", "bash", "-lc", script]
 
 
